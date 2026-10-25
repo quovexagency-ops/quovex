@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>QUOVEX | Rate Your Project</title>
+<meta name="description" content="Tell us how your project with QUOVEX went."/>
+<meta property="og:title" content="QUOVEX | Rate Your Project"/>
+<meta property="og:description" content="Tell us how your project with QUOVEX went."/>
+<meta property="og:image" content="assets/og-quovex.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:site_name" content="QUOVEX"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="theme-color" content="#780000"/>
+<meta property="og:type" content="website"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex"/>
+<link href="assets/favicon-logo.png" rel="icon" type="image/png"/>
+<link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/>
+<link href="site.webmanifest" rel="manifest"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400;500;600;700&amp;family=Syne:wght@400;500;600;650;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="assets/site.css?v=51" rel="stylesheet"/>
+
+<style>
+/* ---- rate-page-only styles: the review form clients get sent after a
+   project, kept off the public portfolio on purpose ---- */
+.rate-page{min-height:100vh;align-items:center;padding-top:150px;position:relative;overflow:hidden}
+.rate-page .rate-us{position:relative;z-index:1}
+/* ---- Rate Us: a clean, centered standalone card under the testimonials,
+   for visitors to leave their own star rating + optional review ---- */
+.rate-section{padding:0 clamp(20px,4vw,48px) 140px;display:flex;justify-content:center}
+.rate-us{
+  width:100%;max-width:560px;text-align:center;
+  padding:clamp(32px,5vw,48px);border-radius:28px;
+  background:var(--white);border:1px solid rgba(120,0,0,.14);
+  box-shadow:0 24px 50px rgba(0,0,0,.08);
+}
+.rate-us .eyebrow{justify-content:center;display:flex}
+.rate-title{font-size:clamp(26px,3.4vw,36px);font-weight:650;line-height:1.15;color:var(--text)}
+.rate-sub{margin-top:14px;font-size:15px;line-height:1.55;opacity:.7;max-width:420px;margin-left:auto;margin-right:auto}
+
+.rate-stars{display:flex;justify-content:center;gap:10px;margin:28px 0 24px}
+.rate-star{
+  background:none;border:none;cursor:pointer;padding:0;
+  font-size:32px;line-height:1;color:rgba(120,0,0,.2);
+  transition:color .15s ease,transform .15s ease;
+}
+.rate-star:hover{transform:scale(1.12)}
+.rate-star.is-active{color:var(--red)}
+
+.rate-field{display:block;text-align:left;margin-bottom:24px}
+.rate-field > span{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-bottom:8px}
+.rate-field > span em{font-style:normal;opacity:.7;text-transform:none;letter-spacing:0}
+.rate-field input,
+.rate-field textarea{
+  width:100%;font-family:inherit;font-size:15px;color:var(--text);
+  padding:14px 16px;border-radius:14px;resize:none;min-height:90px;
+  border:1px solid rgba(120,0,0,.18);background:var(--white);
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.rate-field input:focus,
+.rate-field textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(120,0,0,.08)}
+.rate-field-count{
+  display:block;margin-top:6px;text-align:right;
+  font-size:12px;opacity:.55;
+  transition:color .2s ease,opacity .2s ease;
+}
+.rate-field-count.is-limit{color:var(--red-bright);opacity:1}
+
+.rate-actions{display:flex;flex-direction:column;align-items:center;gap:12px}
+.rate-status{font-size:13px;opacity:.75}
+.rate-status.is-error{color:var(--red-bright);opacity:1}
+
+.form-privacy{font-size:13px;color:var(--text-soft);margin-top:14px}
+.form-privacy a{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.rate-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0}
+</style>
+</head>
+<body>
+
+<div class="cx-wrap" id="cxWrap" aria-hidden="true"></div>
+
+<nav class="nav" aria-label="Main">
+  <a href="index.html" class="nav-logo" aria-label="QUOVEX home"><span class="q-half">Q</span><span class="brand-dot">.</span></a>
+  <div class="nav-links">
+    <span class="nav-pill" aria-hidden="true"></span>
+    <a href="index.html"><span class="nl-full">Home</span><span class="nl-short">Home</span></a>
+    <a href="work.html"><span class="nl-full">Portfolio</span><span class="nl-short">Work</span></a>
+    <a href="book.html"><span class="nl-full">Hire us</span><span class="nl-short">Hire us</span></a>
+  </div>
+  <a href="book.html#quote" data-contact="booking" class="nav-cta">Start a project</a>
+  <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Menu">
+    <a href="index.html" class="mm-link">Home</a>
+    <a href="work.html" class="mm-link">Portfolio</a>
+    <a href="book.html" class="mm-link">Hire us</a>
+  </nav>
+  <div class="mm-actions">
+    <a href="book.html#quote" data-contact="booking" class="mm-btn filled">Start a project</a>
+    <div class="mm-socials">
+      <a href="#" data-contact="instagram" class="social-icon" aria-label="QUOVEX on Instagram" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></svg><span class="social-label">Instagram</span></a>
+      <a href="#" data-contact="whatsapp" class="social-icon" aria-label="Message QUOVEX on WhatsApp" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg><span class="social-label">WhatsApp</span></a>
+      <a href="#" data-contact="email" hidden>Email</a>
+    </div>
+  </div>
+</div>
+
+<section class="rate-section rate-page">
+  <div class="hero-star-field" aria-hidden="true"></div>
+  <div class="rate-us reveal">
+    <div class="eyebrow">Rate Us</div>
+    <h2 class="rate-title">How was your experience<span class="brand-dot">?</span></h2>
+    <p class="rate-sub">Thanks for working with us. Tell us honestly how it went. It helps us, and it helps other people decide.</p>
+
+    <input class="rate-honeypot" type="text" id="rateGotcha" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+    <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Rating out of 5">
+      <button type="button" class="rate-star" data-value="1" aria-label="1 star">&#9733;</button>
+      <button type="button" class="rate-star" data-value="2" aria-label="2 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="3" aria-label="3 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="4" aria-label="4 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="5" aria-label="5 stars">&#9733;</button>
+    </div>
+
+    <label class="rate-field">
+      <span>Your name</span>
+      <input type="text" id="rateName" maxlength="80" autocomplete="name" placeholder="Your name (and company, if you like)"/>
+    </label>
+
+    <label class="rate-field">
+      <span>Your review <em>(optional)</em></span>
+      <textarea id="rateComment" rows="4" maxlength="500" placeholder="What stood out, good or bad?"></textarea>
+      <span class="rate-field-count" id="rateCommentCount">0 / 60 words</span>
+    </label>
+
+    <div class="rate-actions">
+      <button type="button" class="btn btn-filled" id="rateSubmit">Submit rating <span class="arrow">→</span></button>
+      <span class="rate-status" id="rateStatus" aria-live="polite"></span>
+    <p class="form-privacy">Your review may appear on our website. <a href="privacy.html">Privacy policy</a></p>
+    </div>
+  </div>
+</section>
+
+<footer id="footer" class="footer">
+  <h2 class="headline reveal">Let&rsquo;s work together.</h2>
+
+  <div class="footer-actions">
+    <div class="footer-btns">
+      <a href="book.html#quote" data-contact="booking" class="btn btn-filled">Start a project <span class="arrow">→</span></a>
+      <a href="#" data-contact="email" class="btn btn-outline" hidden>Email us</a>
+    </div>
+    <div class="footer-socials">
+      <a href="#" data-contact="instagram" class="social-icon" aria-label="QUOVEX on Instagram" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></svg><span class="social-label">Instagram</span></a>
+      <a href="#" data-contact="whatsapp" class="social-icon" aria-label="Message QUOVEX on WhatsApp" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg><span class="social-label">WhatsApp</span></a>
+    </div>
+  </div>
+
+  <h2 class="footer-logo">QUOVEX<span class="brand-dot">.</span></h2>
+
+  <nav class="footer-links" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="work.html">Portfolio</a>
+    <a href="book.html">Hire us</a>
+    <a href="book.html#quote">Get a quote</a>
+    <a href="privacy.html">Privacy</a>
+  </nav>
+
+  <div class="footer-credits">
+    <span>&copy;2026 QUOVEX. All rights reserved.</span>
+    <span>Video editing</span>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="#" data-contact="whatsapp" aria-label="Chat on WhatsApp" hidden>
+  <svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+</a>
+
+
+<script src="assets/notify.js?v=2"></script>
+<script src="assets/site.js?v=34"></script>
+<script>
+// plain-email backup for reviews (used until the designed emails in assets/notify.js are set up)
+var WEB3FORMS_ACCESS_KEY = 'ce40194a-41d3-4011-ab6b-70672f2e3e74';
+
+/* Review word limit: 60 words is plenty for a short "what stood out"
+   review without inviting an essay. Typing past the limit is blocked
+   outright (extra words just don't land) rather than only warning about
+   it after the fact — same pattern as the "Project details" field on the
+   Hire Us page. */
+(function(){
+  var WORD_LIMIT = 60;
+  var textarea = document.getElementById('rateComment');
+  var counter = document.getElementById('rateCommentCount');
+  if(!textarea || !counter) return;
+
+  function wordsOf(text){
+    var trimmed = text.trim();
+    return trimmed ? trimmed.split(/\s+/) : [];
+  }
+
+  function update(){
+    var words = wordsOf(textarea.value);
+    if(words.length > WORD_LIMIT){
+      var cursor = textarea.selectionStart;
+      var over = words.length - WORD_LIMIT;
+      textarea.value = words.slice(0, WORD_LIMIT).join(' ');
+      var newPos = Math.max(0, cursor - over);
+      textarea.setSelectionRange(newPos, newPos);
+      words = wordsOf(textarea.value);
+    }
+    counter.textContent = words.length + ' / ' + WORD_LIMIT + ' words';
+    counter.classList.toggle('is-limit', words.length >= WORD_LIMIT);
+  }
+
+  textarea.addEventListener('input', update);
+  update();
+})();
+
+/* Supabase config, used by the "Rate Us" widget below. Fill these in from
+   your Supabase project's Settings → Data API page — see ../.env and
+   ../supabase_setup.sql in the project root for exactly where each value
+   comes from and the table setup. The anon key is meant to be public in
+   client-side code like this; it's the RLS policies on the tables (see
+   supabase_setup.sql) that keep the data safe, not secrecy of this key. */
+var SUPABASE_URL = 'https://ghcmkggcvseotyinxelt.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoY21rZ2djdnNlb3R5aW54ZWx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1OTU1ODEsImV4cCI6MjEwNjE3MTU4MX0.NF6o6XE7wH3tB1xUKyahqYQ3LYmXwbbN_gC9QcWO5NM';
+
+function supabaseInsert(table, row){
+  return fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(row)
+  }).then(function(res){
+    if(!res.ok) throw new Error('Supabase insert failed: ' + res.status);
+  });
+}
+
+/* Rate Us: click-to-select 1-5 star widget. Inserts a row into the
+   "ratings" table in Supabase — you'll see new ratings in the Supabase
+   dashboard under Table Editor → ratings. */
+(function(){
+  var stars = Array.prototype.slice.call(document.querySelectorAll('.rate-star'));
+  var group = document.getElementById('rateStars');
+  var comment = document.getElementById('rateComment');
+  var submitBtn = document.getElementById('rateSubmit');
+  var status = document.getElementById('rateStatus');
+  if(!stars.length || !group || !submitBtn || !status) return;
+
+  var selected = 0;
+
+  function paint(upTo){
+    stars.forEach(function(s){
+      s.classList.toggle('is-active', parseInt(s.dataset.value, 10) <= upTo);
+    });
+  }
+
+  stars.forEach(function(s){
+    s.addEventListener('mouseenter', function(){ paint(parseInt(s.dataset.value, 10)); });
+    s.addEventListener('click', function(){
+      selected = parseInt(s.dataset.value, 10);
+      paint(selected);
+      status.className = 'rate-status';
+      status.textContent = '';
+    });
+  });
+  group.addEventListener('mouseleave', function(){ paint(selected); });
+
+  submitBtn.addEventListener('click', function(){
+    if(!selected){
+      status.className = 'rate-status is-error';
+      status.textContent = 'Pick a star rating first.';
+      return;
+    }
+    // hidden bot trap: real people never see or fill it
+    var trap = document.getElementById('rateGotcha');
+    if(trap && trap.value){ status.className = 'rate-status'; status.textContent = 'Thanks for the rating!'; return; }
+    var nameInput = document.getElementById('rateName');
+    var reviewerName = nameInput ? nameInput.value.trim() : '';
+    if(nameInput && !reviewerName){
+      status.className = 'rate-status is-error';
+      status.textContent = 'Add your name first.';
+      nameInput.focus();
+      return;
+    }
+    submitBtn.disabled = true;
+    status.className = 'rate-status';
+    status.textContent = 'Sending…';
+
+    var rated = selected, reviewText = (comment && comment.value.trim()) || '';
+    var ratingRow = {
+      rating: selected,
+      review: (comment && comment.value.trim()) || null,
+      name: reviewerName || null
+    };
+    supabaseInsert('ratings', ratingRow)
+      .catch(function(err){
+        // the "name" column hasn't been added in Supabase yet: keep the review anyway
+        console.warn('Saving with name failed, saving without it:', err);
+        delete ratingRow.name;
+        return supabaseInsert('ratings', ratingRow);
+      })
+      .then(function(){
+        // email it too: the designed email to quovex.agency@gmail.com, or
+        // the plain one if that isn't set up yet (failures here don't
+        // bother the client: their rating is already saved)
+        var stars = '★★★★★☆☆☆☆☆'.slice(5 - rated, 10 - rated);
+        var params = {rating: String(rated), stars: stars, review: reviewText || 'No written review', name: reviewerName || 'No name given'};
+        var send = window.quovexNotify ? window.quovexNotify('review', params) : Promise.reject(new Error('not-configured'));
+        send.catch(function(){
+          return fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+            body: JSON.stringify({
+              access_key: WEB3FORMS_ACCESS_KEY,
+              subject: 'New ' + rated + '-star review',
+              from_name: 'QUOVEX website',
+              name: params.name,
+              rating: stars + ' (' + rated + ' out of 5)',
+              review: params.review
+            })
+          });
+        }).catch(function(err){ console.warn('Review email failed:', err); });
+        status.className = 'rate-status';
+        status.textContent = 'Thanks for the ' + selected + '-star rating!';
+        if(comment) comment.value = '';
+        if(nameInput) nameInput.value = '';
+        selected = 0;
+        paint(0);
+      })
+      .catch(function(){
+        status.className = 'rate-status is-error';
+        status.textContent = 'Something went wrong. Please try again in a moment.';
+      })
+      .finally(function(){
+        submitBtn.disabled = false;
+      });
+  });
+})();
+</script>
+</body>
+</html>

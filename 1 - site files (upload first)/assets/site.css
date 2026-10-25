@@ -1,0 +1,584 @@
+:root{
+  --red:#780000;
+  --red-bright:#AE1F23;
+  --ink:#003049;
+  --white:#fff;
+  --sky:#669BBC;
+  --bone-white:#ededed;
+  --bg:var(--bone-white);
+  /* a warm near-black / warm grey pair for body copy, so red and ink
+     stay reserved for headings, CTAs, and other deliberate accents
+     instead of being the default color of every paragraph on the site.
+     kept warm (not a cool slate grey) so it still sits comfortably next
+     to the brand red rather than reading as a colder, borrowed palette. */
+  --text:#241f1d;
+  --text-soft:#756c68;
+  --radius-lg:30px;
+  --radius-md:20px;
+  --radius-sm:12px;
+  --radius-pill:100px;
+  --ease:cubic-bezier(.16,1,.3,1);
+  /* three-font system: Syne for display (the brand's voice — logo,
+     headlines), Geist for everything people actually read, and Geist
+     Mono for small labels and numbers */
+  --font-display:'Syne',sans-serif;
+  --font-body:'Geist',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  --font-mono:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:auto;overscroll-behavior:none;overflow-x:clip}
+body{
+  font-family:var(--font-body);
+  font-weight:400;
+  color:var(--text);
+  background:var(--bg);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  overflow-x:clip;
+  overscroll-behavior:none;
+}
+a{color:inherit;text-decoration:none}
+.brand-dot{color:var(--ink)}
+::selection{background:var(--red);color:var(--white)}
+button{font-family:inherit}
+h1,h2,h3,.nav-logo,.footer-logo,.headline{font-family:var(--font-display);letter-spacing:-.02em}
+
+/* a whisper of film grain over the whole site, so the flat bone-white
+   reads like a printed frame rather than a blank screen */
+body::after{
+  content:'';position:fixed;inset:-50%;z-index:2147483646;pointer-events:none;
+  opacity:.06;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+img{max-width:100%;display:block}
+/* the hidden attribute always wins, even over classes that set their own
+   display (.btn is inline-flex) — used by contact links that stay hidden
+   until their detail is filled in (see QUOVEX_CONTACT in site.js) */
+[hidden]{display:none !important}
+
+/* ---------- scroll reveal: content fades + un-blurs in and settles
+   upward as it enters the viewport (see site.js for the
+   IntersectionObserver that toggles .is-visible). No `transition` is
+   declared here on purpose — site.js applies it inline, only for the
+   duration of the reveal itself, so it can never permanently override
+   an element's own hover/interaction transition (.niche-box and
+   .package-bar, both common reveal targets, already own one for other
+   things). ---------- */
+.reveal{opacity:0;filter:blur(6px);transform:translateY(18px)}
+.reveal.is-visible{opacity:1;filter:blur(0);transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){
+  .reveal{opacity:1;filter:none;transform:none}
+}
+
+/* ---------- NAV: a floating capsule ----------
+   Desktop: a rounded capsule floating at the top centre (logo, links,
+   "Start a project"), frosted bone-white over the page. A soft tinted
+   pill glides behind whichever link the pointer is on and settles back
+   on the current page (site.js moves it). Phones: the same capsule
+   becomes a floating dock at the bottom of the screen, in thumb reach,
+   with a round red "+" that raises the menu card out of the dock. In
+   both, it tucks away while you scroll down and returns on scroll up. */
+.nav{
+  position:fixed;z-index:200;
+  top:16px;left:50%;
+  transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;
+  padding:7px 7px 7px 20px;
+  border-radius:999px;
+  background:rgba(246,245,242,.72);
+  border:1px solid rgba(36,31,29,.08);
+  box-shadow:0 12px 34px rgba(36,31,29,.10),0 1px 0 rgba(255,255,255,.7) inset;
+  backdrop-filter:blur(18px) saturate(1.3);
+  -webkit-backdrop-filter:blur(18px) saturate(1.3);
+  transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .3s ease;
+  white-space:nowrap;
+}
+.nav.is-hidden{transform:translate(-50%,-160%)}
+.nav-logo{display:inline-flex;align-items:center;font-weight:700;font-size:28px;line-height:1;letter-spacing:.01em;margin-right:14px}
+.nav-logo .q-half{color:var(--red)}
+
+.nav-links{position:relative;display:flex;align-items:center;gap:2px}
+.nav-links a{
+  position:relative;z-index:1;
+  display:inline-flex;align-items:center;
+  padding:11px 18px;border-radius:999px;
+  font-family:var(--font-mono);font-weight:700;
+  font-size:13.5px;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--text);
+  transition:color .3s ease;
+}
+.nav-links a.active,.nav-links a.is-under{color:var(--red)}
+.nav-links .nl-short{display:none}
+/* the gliding pill behind the hovered / current link */
+.nav-pill{
+  position:absolute;z-index:0;top:0;left:0;height:100%;width:0;
+  border-radius:999px;
+  background:rgba(120,0,0,.08);
+  box-shadow:inset 0 0 0 1px rgba(120,0,0,.08);
+  opacity:0;
+  transition:transform .55s cubic-bezier(.34,1.3,.5,1),width .55s cubic-bezier(.34,1.3,.5,1),opacity .25s ease;
+  pointer-events:none;
+}
+.nav-pill.is-on{opacity:1}
+
+.nav-cta{
+  margin-left:6px;
+  display:inline-flex;align-items:center;
+  padding:12px 22px;border-radius:999px;
+  background-color:var(--red);color:var(--white);
+  background-image:url("concrete.webp");background-size:cover;background-blend-mode:overlay;
+  font-family:var(--font-mono);font-weight:700;
+  font-size:13px;letter-spacing:.07em;text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 16px rgba(120,0,0,.22);
+  transition:transform .25s ease,box-shadow .25s ease,background-color .25s ease;
+}
+.nav-cta:hover{transform:translateY(-1px);background-color:var(--red-bright);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 10px 22px rgba(120,0,0,.3)}
+
+.menu-btn{
+  display:none;
+  width:46px;height:46px;flex:none;border-radius:50%;border:none;padding:0;cursor:pointer;
+  align-items:center;justify-content:center;
+  background-color:var(--red);color:var(--white);
+  background-image:url("concrete.webp");background-size:cover;background-blend-mode:overlay;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 6px 16px rgba(120,0,0,.25);
+}
+.menu-btn svg{width:20px;height:20px;transition:transform .45s cubic-bezier(.34,1.4,.5,1)}
+.menu-btn[aria-expanded="true"] svg{transform:rotate(135deg)}
+
+/* ---------- MOBILE MENU: a card that rises out of the dock ---------- */
+.mobile-menu{
+  position:fixed;z-index:190;
+  left:14px;right:14px;bottom:calc(84px + env(safe-area-inset-bottom));
+  max-width:440px;margin:0 auto;
+  padding:26px 22px 22px;
+  border-radius:30px;
+  background-color:var(--red);color:var(--white);
+  box-shadow:0 30px 60px rgba(60,0,0,.35),inset 0 1px 0 rgba(255,255,255,.14);
+  transform-origin:50% 100%;
+  transform:translateY(24px) scale(.94);opacity:0;visibility:hidden;
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s ease,visibility 0s linear .5s;
+}
+.mobile-menu.open{transform:none;opacity:1;visibility:visible;transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s ease}
+.mobile-menu nav{display:flex;flex-direction:column}
+.mobile-menu a.mm-link{
+  font-family:var(--font-display);letter-spacing:-.02em;
+  font-size:34px;font-weight:600;line-height:1.1;
+  padding:14px 4px;
+  border-bottom:1px solid rgba(255,255,255,.16);
+  transition:opacity .2s ease,padding-left .25s ease;
+}
+.mobile-menu a.mm-link:hover{opacity:.8;padding-left:10px}
+.mobile-menu .mm-actions{display:flex;flex-direction:column;gap:16px;margin-top:22px}
+.mobile-menu .mm-btn{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  padding:17px 24px;border-radius:var(--radius-pill);border:1px solid var(--white);
+  font-family:var(--font-mono);font-weight:600;
+  font-size:13.5px;letter-spacing:.08em;text-transform:uppercase;
+  transition:background-color .2s ease,color .2s ease;
+}
+.mobile-menu .mm-btn.filled{background:var(--white);color:var(--red)}
+.mobile-menu .mm-btn.filled:hover{background:transparent;color:var(--white)}
+.mm-socials{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.mm-socials a{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
+/* dims the page behind the open menu card */
+.menu-scrim{
+  position:fixed;inset:0;z-index:180;background:rgba(20,12,10,.28);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  opacity:0;visibility:hidden;transition:opacity .35s ease,visibility 0s linear .35s;
+}
+.menu-scrim.open{opacity:1;visibility:visible;transition:opacity .35s ease}
+
+@media (min-width:901px){
+  .mobile-menu,.menu-scrim{display:none}
+}
+@media (max-width:900px){
+  /* the dock */
+  .nav{
+    top:auto;bottom:calc(14px + env(safe-area-inset-bottom));
+    width:calc(100% - 28px);max-width:440px;
+    justify-content:space-between;gap:4px;
+    padding:6px 6px 6px 16px;
+    box-shadow:0 14px 40px rgba(36,31,29,.18),0 1px 0 rgba(255,255,255,.7) inset;
+  }
+  .nav.is-hidden{transform:translate(-50%,160%)}
+  .nav-logo{font-size:24px;margin-right:2px}
+  .nav-cta{display:none}
+  .menu-btn{display:inline-flex}
+  .nav-links{flex:1;justify-content:center}
+  .nav-links a{padding:11px 12px;font-size:12px;letter-spacing:.06em}
+  .nav-links .nl-full{display:none}
+  .nav-links .nl-short{display:inline}
+}
+@media (max-width:360px){
+  .nav-links a{padding:10px 8px;font-size:11px}
+}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex;align-items:center;gap:12px;
+  padding:18px 34px;border-radius:var(--radius-pill);
+  font-family:var(--font-mono);font-weight:500;
+  font-size:14px;letter-spacing:.08em;text-transform:uppercase;
+  border:1px solid var(--red);
+  transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.btn-filled{background:var(--red);color:var(--white)}
+.btn-filled:hover{background:transparent;color:var(--red-bright);border-color:var(--red-bright);transform:translateY(-2px)}
+.btn-outline{background:transparent;color:var(--red)}
+.btn-outline:hover{background:var(--red-bright);border-color:var(--red-bright);color:var(--white);transform:translateY(-2px)}
+.btn .arrow{transition:transform .2s ease}
+.btn:hover .arrow{transform:translateX(4px)}
+
+/* ---------- HERO ---------- */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:130px clamp(20px,4vw,48px) 56px;
+}
+.hero-text p{
+  font-size:clamp(16px,2vw,22px);
+  line-height:1.45;
+  max-width:620px;
+  margin-bottom:30px;
+}
+.logo-big{
+  font-weight:700;
+  font-size:clamp(56px,13vw,220px);
+  line-height:.95;
+  text-align:center;
+  letter-spacing:-.01em;
+  margin:56px 0;
+  word-break:break-word;
+}
+.hero-bottom{
+  display:flex;justify-content:flex-end;align-items:center;flex-wrap:wrap;gap:14px;
+  padding-top:4px;
+  font-size:13px;letter-spacing:.03em;text-transform:uppercase;
+}
+.hero-bottom .socials{display:flex;gap:22px}
+.hero-bottom a:hover{opacity:.6}
+
+/* ---------- SCROLL CUE (shared, used on hero sections) ---------- */
+.scroll-cue{
+  position:absolute;left:50%;bottom:104px;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:10px;
+  transition:opacity .25s ease;
+}
+.scroll-cue-track{
+  position:relative;width:1px;height:38px;background:rgba(120,0,0,.2);
+  overflow:hidden;
+}
+.scroll-cue-dot{
+  position:absolute;left:50%;top:-6px;width:5px;height:5px;border-radius:50%;
+  background:var(--red);transform:translateX(-50%);
+  animation:scrollCueDot 1.9s cubic-bezier(.65,0,.35,1) infinite;
+}
+@keyframes scrollCueDot{
+  0%{top:-6px;opacity:0}
+  18%{opacity:1}
+  82%{opacity:1}
+  100%{top:38px;opacity:0}
+}
+.scroll-cue-label{
+  font-family:var(--font-mono);
+  font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--text-soft);
+}
+@media (max-width:600px){
+  .scroll-cue{bottom:96px}
+}
+
+/* ---------- GENERIC PAGE SECTIONS ---------- */
+.section{padding:130px clamp(20px,4vw,48px)}
+.section-head{max-width:760px;margin-bottom:64px}
+.eyebrow{
+  font-family:var(--font-mono);
+  font-size:12px;font-weight:500;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--red);margin-bottom:16px;
+  align-items:center;
+}
+.section-head h2{
+  font-size:clamp(36px,6.2vw,68px);
+  font-weight:600;
+  line-height:1.05;
+  color:var(--text);
+}
+.section-head p{
+  margin-top:22px;
+  font-size:clamp(17px,1.6vw,21px);
+  line-height:1.55;
+  max-width:600px;
+  opacity:.85;
+}
+
+/* about (home) */
+.about-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:48px;
+}
+.about-list{list-style:none;display:flex;flex-direction:column;gap:0}
+.about-list li{
+  padding:20px 0;border-bottom:1px solid rgba(120,0,0,.15);
+  font-size:clamp(17px,2vw,22px);font-weight:500;
+  display:flex;align-items:center;gap:14px;
+}
+.about-list li::before{
+  content:'';width:6px;height:6px;border-radius:50%;background:var(--red);flex:none;
+}
+@media (max-width:800px){
+  .about-grid{grid-template-columns:1fr;gap:32px}
+}
+
+/* portfolio grid */
+.work-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:28px}
+.work-card{display:block;position:relative;overflow:hidden;border-radius:14px}
+.work-card img{width:100%;height:340px;object-fit:cover;transition:transform .5s ease}
+.work-card:hover img{transform:scale(1.04)}
+.work-card-info{padding:18px 2px 0}
+.work-card-info h3{font-size:22px;font-weight:600;margin-bottom:6px}
+.work-card-info p{font-size:14px;opacity:.7}
+@media (max-width:800px){
+  .work-grid{grid-template-columns:1fr}
+}
+
+/* services list */
+.services-list{display:flex;flex-direction:column;gap:14px}
+.service-row{
+  display:flex;justify-content:space-between;align-items:baseline;gap:24px;
+  padding:30px 32px;
+  border:1px solid rgba(120,0,0,.14);border-radius:22px;
+  flex-wrap:wrap;
+  transition:background-color .25s ease,border-color .25s ease,transform .25s ease;
+}
+.service-row:hover{background:rgba(102,155,188,.14);border-color:rgba(120,0,0,.28);transform:translateY(-2px)}
+.service-row .num{font-size:16px;opacity:.5;min-width:36px}
+.service-row h3{font-size:clamp(26px,3.8vw,40px);font-weight:600;flex:1;min-width:200px}
+.service-row p{font-size:17px;max-width:380px;opacity:.75;line-height:1.5}
+
+.cta-block{
+  text-align:center;padding:140px clamp(20px,4vw,48px);
+}
+.cta-block h2{
+  font-size:clamp(36px,6.5vw,68px);font-weight:600;margin-bottom:36px;line-height:1.1;
+  color:var(--red);
+}
+.cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- FOOTER ---------- */
+.footer{
+  background:var(--red);color:var(--white);
+  display:flex;flex-direction:column;justify-content:flex-end;
+  padding:120px clamp(20px,4vw,48px) 28px;
+  border-radius:36px 36px 0 0;
+}
+.footer h2.headline{
+  white-space:nowrap;
+  font-size:clamp(44px,8vw,96px);
+  font-weight:600;
+  line-height:1.08;
+  margin-bottom:34px;
+}
+.footer-actions{
+  display:flex;flex-wrap:wrap;gap:24px;align-items:center;justify-content:space-between;
+  margin-bottom:56px;
+}
+.footer-btns{display:flex;gap:16px;flex-wrap:wrap}
+.footer-btns .btn{border-color:var(--white)}
+.footer-btns .btn-filled{background:var(--white);color:var(--red)}
+.footer-btns .btn-filled:hover{background:transparent;color:var(--white)}
+.footer-btns .btn-outline{color:var(--white)}
+.footer-btns .btn-outline:hover{background:var(--white);color:var(--red-bright)}
+/* Instagram and WhatsApp as labelled pills (logo + name) side by side,
+   so they read at a glance. Links come from QUOVEX_CONTACT in site.js;
+   until one is filled in, its pill shows but doesn't go anywhere yet. */
+.footer-socials{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}
+.social-icon{
+  display:inline-flex;align-items:center;gap:10px;
+  height:48px;padding:0 20px 0 16px;border-radius:999px;
+  border:1.5px solid currentColor;
+  font-family:var(--font-body);font-size:15px;font-weight:600;letter-spacing:0;text-transform:none;
+  transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease;
+}
+.social-icon[hidden]{display:none}
+.social-icon svg{width:20px;height:20px;display:block;flex:none}
+.social-icon:not(.is-pending):hover{background:var(--white);border-color:var(--white);color:var(--red);transform:translateY(-2px)}
+.social-icon.is-pending{cursor:default}
+.mm-socials .social-icon{font-family:var(--font-body);font-size:15px;letter-spacing:0;text-transform:none;opacity:1}
+
+.footer-logo{
+  font-weight:700;
+  font-size:clamp(50px,11vw,180px);
+  text-align:center;
+  line-height:.95;
+  margin:20px 0 36px;
+  word-break:break-word;
+}
+.footer-logo .brand-dot{color:var(--white)}
+
+.footer-credits{
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  padding-top:18px;border-top:1px solid rgba(255,255,255,.18);
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+}
+.footer-credits{opacity:.85}
+
+@media (max-width:600px){
+  .footer-actions{flex-direction:column;align-items:flex-start;gap:28px}
+  .footer-credits{flex-direction:column}
+}
+
+/* ---------- custom cursor (site-wide): a plain white circle blended with
+   mix-blend-mode:difference, so it automatically inverts whatever color
+   is underneath it (light backgrounds read dark, dark backgrounds read
+   light) with no per-element color sampling needed — grows over
+   clickable things and presses inward on click. Must stay a direct,
+   unwrapped descendant of <body> (no ancestor transform/opacity/filter)
+   or the blend will only apply within that ancestor's own box. */
+@media (pointer:fine){
+  *{cursor:none !important}
+}
+.cx-wrap{
+  position:fixed;top:0;left:0;
+  width:24px;height:24px;margin:-12px 0 0 -12px;
+  border-radius:50%;
+  background:#fff;
+  mix-blend-mode:difference;
+  pointer-events:none;z-index:2147483647;
+  opacity:0;
+  transition:opacity .3s ease;
+  will-change:transform;
+}
+.cx-wrap.is-active{opacity:1}
+
+@media (pointer:coarse), (hover:none){
+  .cx-wrap{display:none}
+}
+
+/* ---------- hero starlight field (shared by every page's hero) ----------
+   Modelled on the Rolls-Royce Starlight Headliner: crisp pinpoints,
+   scattered irregularly, twinkling gently. The stars themselves are
+   generated by site.js into any .hero-star-field element. --s is the
+   star size unit: it grows with the screen width so the stars read just
+   as clearly on a large desktop as on a phone (1px on phones, up to
+   2.4px on wide screens); each star's width is a multiple of it. */
+.hero-star-field{
+  position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none;
+  --s:clamp(1px,.15vw,2.4px);
+}
+.hero-star{
+  position:absolute;
+  width:calc(var(--d) * var(--s));height:calc(var(--d) * var(--s));
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  color:var(--text);
+  background:currentColor;
+  animation-name:heroTwinkle;animation-timing-function:ease-in-out;animation-iteration-count:infinite;
+}
+@keyframes heroTwinkle{
+  0%,100%{opacity:.45;transform:translate(-50%,-50%) scale(.85)}
+  50%{opacity:1;transform:translate(-50%,-50%) scale(1)}
+}
+/* the meteors canvas (drawn by site.js) sits over the stars */
+.hero-meteors{position:absolute;inset:0;pointer-events:none}
+@media (prefers-reduced-motion:reduce){
+  .hero-star{animation:none;opacity:.8}
+}
+
+/* ---------- floating WhatsApp button (every page), only shown once a
+   WhatsApp number is set in QUOVEX_CONTACT (site.js) ---------- */
+.whatsapp-float{
+  position:fixed;right:28px;bottom:28px;z-index:150;
+  width:60px;height:60px;border-radius:50%;
+  background:#25D366;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 12px 30px rgba(37,211,102,.4);
+  transition:transform .2s ease,box-shadow .2s ease;
+}
+.whatsapp-float:hover{transform:translateY(-3px) scale(1.05);box-shadow:0 16px 36px rgba(37,211,102,.5)}
+.whatsapp-float svg{width:30px;height:30px;fill:#fff}
+@media (max-width:600px){
+  .whatsapp-float{right:18px;bottom:18px;width:52px;height:52px}
+  .whatsapp-float svg{width:26px;height:26px}
+}
+
+/* small mono line above each page's big title */
+.hero-kicker{
+  position:relative;z-index:1;
+  font-family:var(--font-mono);font-size:12px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--text-soft);margin-bottom:6px;
+}
+
+/* ---------- concrete texture + 3D, used sparingly: the logo wordmarks, the
+   big page titles, and a few solid colour panels (phone menu, footer,
+   the services strip). concrete.webp is a 2560px smooth concrete surface
+   (fine, even grain with very soft tone variation) lit from the top-left
+   like the logo artwork, always stretched to cover the whole element so
+   it never visibly repeats. On the lettering, site.js applies an SVG
+   filter that lays that texture over the letters' own colour and gives
+   them a narrow rounded edge, with no shadow behind. ---------- */
+
+
+/* textured panels, with a soft pillowed edge: lit along the top, shaded
+   along the bottom */
+.mobile-menu,.footer{
+  background-image:url("concrete.webp");
+  background-size:cover;background-repeat:no-repeat;background-position:center;
+  background-blend-mode:overlay;
+}
+.footer{box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -6px 14px rgba(0,0,0,.18)}
+
+/* ---------- phone proportions (shared) ---------- */
+@media (max-width:900px){
+  /* the footer's last lines must clear the floating dock */
+  .footer{padding:84px 20px calc(118px + env(safe-area-inset-bottom));border-radius:28px 28px 0 0}
+  .footer h2.headline{margin-bottom:26px}
+  .footer-actions{margin-bottom:40px}
+  .footer-logo{margin:10px 0 28px}
+}
+@media (max-width:600px){
+  .btn{padding:15px 26px;font-size:13px;gap:10px}
+  .eyebrow{font-size:11px;margin-bottom:12px}
+}
+
+/* footer page links */
+.footer-links{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 28px;margin:6px 0 26px;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase}
+.footer-links a{opacity:.85;transition:opacity .2s ease}
+.footer-links a:hover{opacity:1;text-decoration:underline;text-underline-offset:4px}
+
+/* Instagram and WhatsApp pills in their own brand colours, with a glow,
+   a lift on hover and a small press on tap */
+.social-icon[data-contact="instagram"],.social-icon[data-contact="whatsapp"]{
+  color:#fff !important;border:0 !important;
+  height:50px;padding:0 22px 0 18px;
+  font-weight:700;
+  transition:transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s ease,filter .25s ease;
+}
+.social-icon[data-contact="instagram"]{
+  background:radial-gradient(circle at 25% 110%,#fdf497 0%,#fd5949 40%,#d6249f 62%,#285AEB 100%) !important;
+  box-shadow:0 10px 24px rgba(214,36,159,.35),inset 0 1px 0 rgba(255,255,255,.3);
+}
+.social-icon[data-contact="whatsapp"]{
+  background:linear-gradient(135deg,#3be37a 0%,#25D366 45%,#128C7E 100%) !important;
+  box-shadow:0 10px 24px rgba(37,211,102,.35),inset 0 1px 0 rgba(255,255,255,.3);
+}
+.social-icon[data-contact="instagram"]:hover,.social-icon[data-contact="whatsapp"]:hover{
+  transform:translateY(-3px) scale(1.03);filter:saturate(1.15) brightness(1.05);
+}
+.social-icon[data-contact="instagram"]:hover{box-shadow:0 16px 34px rgba(214,36,159,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.social-icon[data-contact="whatsapp"]:hover{box-shadow:0 16px 34px rgba(37,211,102,.5),inset 0 1px 0 rgba(255,255,255,.3)}
+.social-icon[data-contact="instagram"]:active,.social-icon[data-contact="whatsapp"]:active{transform:scale(.96)}
+.social-icon[data-contact="instagram"]:focus-visible,.social-icon[data-contact="whatsapp"]:focus-visible{outline:3px solid #fff;outline-offset:3px}
+@media (max-width:600px){
+  .social-icon[data-contact="instagram"],.social-icon[data-contact="whatsapp"]{height:46px;padding:0 18px 0 15px;font-size:14.5px}
+}
+
+/* the floating WhatsApp button appears on the Hire Us page only
+   (book.html turns it on); on phones it sits above the bottom menu */
+.whatsapp-float{display:none !important}
+.page-hire .whatsapp-float:not([hidden]){display:flex !important}
+@media (max-width:900px){
+  .whatsapp-float{bottom:calc(98px + env(safe-area-inset-bottom)) !important}
+}
+
+/* a YouTube video standing in for a site <video> (assets/youtube.js) */
+.yt-host{position:relative;overflow:hidden;background:#0b0b0b}
+.yt-host iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+.yt-shield{position:absolute;inset:0;z-index:1}
