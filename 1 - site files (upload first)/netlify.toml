@@ -1,5 +1,0 @@
-# Netlify settings: a plain static site, published straight from this folder.
-# No build step. Security headers and caching are in the _headers file.
-[build]
-  publish = "."
-  command = ""
