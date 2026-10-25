@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>QUOVEX | Portfolio</title>
+<meta name="description" content="Reels, TikToks, software demo videos and YouTube edits made by QUOVEX. Watch our work and get a quote."/>
+<meta property="og:title" content="QUOVEX | Portfolio"/>
+<meta property="og:description" content="Reels, TikToks, software demo videos and YouTube edits made by QUOVEX. Watch our work and get a quote."/>
+<meta property="og:image" content="assets/og-quovex.jpg"/>
+<meta property="og:image:width" content="1200"/>
+<meta property="og:image:height" content="630"/>
+<meta property="og:site_name" content="QUOVEX"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="theme-color" content="#780000"/>
+<meta property="og:type" content="website"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<link href="work.html" rel="canonical"/>
+<link href="assets/favicon-logo.png" rel="icon" type="image/png"/>
+<link href="assets/apple-touch-icon.png" rel="apple-touch-icon"/>
+<link href="site.webmanifest" rel="manifest"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400;500;600;700&amp;family=Syne:wght@400;500;600;650;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="assets/site.css?v=50" rel="stylesheet"/>
+
+<style>
+/* ---- portfolio-page-only overrides (kept out of the shared stylesheet on purpose) ---- */
+
+.portfolio-hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;position:relative;overflow:hidden;
+  padding:150px clamp(20px,4vw,48px) 90px;
+}
+.portfolio-title,.portfolio-sub{position:relative;z-index:1}
+.portfolio-title{
+  color:var(--red);
+  font-weight:650;
+  font-size:clamp(50px,11vw,170px);
+  line-height:1;
+}
+.portfolio-sub{
+  margin-top:24px;
+  color:var(--text-soft);
+  max-width:560px;
+  font-size:clamp(17px,1.6vw,21px);
+  line-height:1.5;
+  font-weight:500;
+}
+.portfolio-hero .scroll-cue{display:none} /* the playing reel already pulls the eye down */
+
+/* ---- hero device: an empty landscape iPad mockup. Floats directly on the page (no card/panel around it —
+   removed so the device itself is the only visual weight below the
+   title) and tilts toward the cursor + catches a moving light sheen on
+   hover, the same interaction language as the package cards on the Hire
+   Us page, just applied to a dark glass device instead of a gradient
+   card. ---- */
+.hero-device{
+  position:relative;z-index:1;
+  display:flex;flex-direction:column;align-items:center;gap:20px;
+  margin-top:56px;width:100%;
+}
+/* the iPad: big enough to actually watch, sized by whichever runs out
+   first, page width or the height left under the title */
+.hero-device-frame{
+  position:relative;
+  width:clamp(300px,min(58vw,calc((100svh - 490px) * 1.333)),780px);
+  aspect-ratio:4/3;
+  border-radius:clamp(20px,2.4vw,32px);
+  background:linear-gradient(155deg,#2c2c2e,#131314);
+  padding:clamp(8px,1vw,13px);
+  box-shadow:0 30px 70px rgba(0,0,0,.34),inset 0 0 0 1px rgba(255,255,255,.05);
+}
+.hero-device-cam{
+  position:absolute;top:clamp(3px,.4vw,5px);left:50%;transform:translateX(-50%);
+  width:5px;height:5px;border-radius:50%;background:#000;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08);z-index:2;
+}
+.hero-device-screen{
+  position:relative;width:100%;height:100%;border-radius:clamp(12px,1.5vw,20px);overflow:hidden;
+  background:#111;
+}
+/* a soft diagonal sheen across the glass, over the video */
+.hero-device-screen::before{
+  content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+  background:linear-gradient(115deg,rgba(255,255,255,.08) 0%,transparent 30%,transparent 70%,rgba(255,255,255,.03) 100%);
+}
+/* the highlight reel: silent, looping, starts on its own */
+.hero-reel{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;z-index:0}
+.hero-device-note{font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-soft)}
+@media (max-width:900px){
+  .hero-device-frame{width:min(100%,640px)}
+}
+@media (max-width:480px){
+  .hero-device{margin-top:36px}
+}
+
+.hero-device-more{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--text-soft);transition:color .2s ease;
+}
+.hero-device-more:hover{color:var(--red)}
+.hero-device-more span{display:inline-block;animation:moreNudge 1.6s ease-in-out infinite}
+@keyframes moreNudge{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.hero-device-more span{animation:none}}
+
+/* shared by the niche carousel's reel-style cards below */
+.reel-progress{position:absolute;left:14px;right:14px;top:14px;height:3px;border-radius:100px;background:rgba(255,255,255,.22);overflow:hidden;z-index:2}
+.reel-progress-fill{display:block;height:100%;width:0%;background:var(--white);border-radius:inherit}
+
+/* ---- niches: one filterable "peek" carousel — a large centered card
+   with the neighboring cards visible-but-dimmed at the edges, forward/
+   back arrows outside it, and dot pagination below. Inspired by a
+   reference site's portfolio carousel rather than the earlier per-format
+   layouts (YouTube list / Instagram feed / device mockups), which were
+   three unrelated builds instead of one consistent pattern. ---- */
+.niches{padding:40px clamp(20px,4vw,48px) 72px}
+.niches + .niches{padding-top:24px}
+.niches-head{max-width:100%;margin:0 auto 56px;text-align:center}
+.niches-head .eyebrow{justify-content:center;display:flex;margin-bottom:14px}
+.niches-head h2{font-size:clamp(26px,4vw,48px);font-weight:600;line-height:1.15;margin-bottom:14px;white-space:nowrap;color:var(--text)}
+.niches-head-break{display:none}
+.niches-head p{color:var(--text-soft);font-size:16px}
+@media (max-width:640px){
+  .niches-head-break{display:block}
+}
+
+/* the heading's closing mark hard-alternates ink/red every 2s, same steps(1,end) snap and same colors as
+   the hero logo's "." and the Company Theory "?" on the home page, so it
+   reads as the same signature mark rather than a new one */
+@keyframes altMarkColor{
+  0%,49.99%{color:var(--ink)}
+  50%,100%{color:var(--red)}
+}
+.niches-head h2 .alt-mark{
+  display:inline-block;
+  color:var(--ink);
+  animation:altMarkColor 4s steps(1,end) infinite;
+}
+@media (prefers-reduced-motion:reduce){
+  .niches-head h2 .alt-mark{animation:none}
+}
+
+/* ---- the carousel: a viewport just wide enough to peek the neighbors,
+   a flex track that slides via transform, the active slide full-size and
+   opaque, the rest dimmed and scaled down. ---- */
+.work-carousel{position:relative;max-width:1180px;margin:0 auto}
+/* generous top/bottom padding so the slide's box-shadow has room to fully
+   fade out before the viewport's overflow:hidden clips it — too little
+   padding here is what turns a soft shadow into a hard visible line */
+.work-carousel-viewport{overflow:hidden;padding:20px 0 56px}
+.work-carousel-track{
+  display:flex;align-items:center;gap:32px;
+  will-change:transform;transition:transform .5s cubic-bezier(.19,1,.22,1);
+}
+.work-slide{
+  flex:0 0 auto;width:min(600px,68vw);
+  aspect-ratio:16/10;border-radius:28px;overflow:hidden;position:relative;
+  background:var(--white);box-shadow:0 20px 40px rgba(0,0,0,.14);
+  opacity:.38;transform:scale(.86);
+  transition:opacity .5s cubic-bezier(.19,1,.22,1),transform .5s cubic-bezier(.19,1,.22,1);
+}
+.work-slide.is-active{opacity:1;transform:scale(1)}
+/* short-form: vertical, like a real Reels/TikTok cut, not the same
+   landscape shape as the other two formats */
+.work-slide--portrait{width:min(300px,58vw);aspect-ratio:9/16}
+.work-slide--landscape{width:min(640px,72vw);aspect-ratio:16/9}
+.work-slide--standard{width:min(520px,66vw);aspect-ratio:4/3}
+.work-slide--square{width:min(420px,62vw);aspect-ratio:1/1}
+.niche-filter{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:10px;
+  margin-bottom:40px;
+}
+.niche-filter-btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 24px;border-radius:999px;border:1.5px solid rgba(120,0,0,.2);
+  background:var(--white);color:var(--text);
+  font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  box-shadow:0 6px 16px rgba(0,0,0,.05);
+  cursor:pointer;transition:background-color .2s ease,color .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease;
+}
+.niche-filter-btn:hover{border-color:var(--red);color:var(--red);transform:translateY(-2px)}
+.niche-filter-btn.is-active{background:var(--red);border-color:var(--red);color:var(--white);box-shadow:0 10px 24px rgba(120,0,0,.24)}
+.niche-filter-count{font-size:11px;opacity:.6}
+.niche-filter-btn.is-active .niche-filter-count{opacity:.8}
+
+/* a format with nothing in it yet gets an honest "coming soon" card */
+.work-empty{
+  flex:0 0 auto;width:min(560px,86vw);margin:0 auto;
+  padding:44px 34px;border-radius:28px;text-align:center;
+  background:var(--white);border:1px dashed rgba(120,0,0,.25);
+}
+.work-empty h3{font-size:clamp(22px,2.6vw,28px);font-weight:650;color:var(--text);margin-bottom:10px}
+.work-empty p{color:var(--text-soft);font-size:16px;line-height:1.6;margin-bottom:22px}
+
+.work-slide video,.work-slide-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#111}
+.work-slide iframe{position:absolute;inset:0;width:100%;height:100%;border:0;pointer-events:none}
+.work-slide::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(180deg,transparent 60%,rgba(0,0,0,.45));
+}
+.work-slide-play{
+  position:absolute;left:50%;top:50%;margin:-30px 0 0 -30px;z-index:1;
+  width:60px;height:60px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.32);
+  -webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;color:#fff;
+  box-shadow:0 10px 24px rgba(0,0,0,.3);
+  transition:background-color .3s ease,border-color .3s ease,transform .3s ease,opacity .2s ease;
+}
+.work-slide:not(.is-active) .work-slide-play{opacity:0}
+.work-slide.is-active:hover .work-slide-play{
+  background:var(--red-bright);border-color:var(--red-bright);transform:scale(1.08);
+}
+.work-slide-tag{
+  position:absolute;left:16px;bottom:16px;z-index:2;
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:100px;background:var(--white);
+  font-size:13px;font-weight:650;color:var(--text);
+  box-shadow:0 8px 18px rgba(0,0,0,.14);
+  transition:opacity .3s ease;
+}
+.work-slide-tag-dot{width:7px;height:7px;border-radius:50%;background:var(--red);flex:none}
+
+/* ---- lightbox: opens either player much larger, dead center, so the
+   small carousel card isn't the only way to actually look at a cut ---- */
+body.lightbox-open{overflow:hidden}
+.video-lightbox{
+  position:fixed;inset:0;z-index:600;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .3s ease,visibility 0s linear .3s;
+}
+.video-lightbox.is-open{opacity:1;visibility:visible;pointer-events:auto;transition:opacity .3s ease}
+.video-lightbox-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.78);-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px)}
+.video-lightbox-close{
+  position:absolute;top:22px;right:22px;z-index:2;
+  width:44px;height:44px;border-radius:50%;
+  border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);
+  color:#fff;font-size:22px;line-height:1;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background-color .2s ease;
+}
+.video-lightbox-close:hover{background:rgba(255,255,255,.2)}
+.video-lightbox-stage{
+  position:relative;z-index:1;
+  transform:scale(.94);transition:transform .4s cubic-bezier(.19,1,.22,1);
+}
+.video-lightbox.is-open .video-lightbox-stage{transform:scale(1)}
+.lightbox-video{
+  display:block;height:min(82vh,760px);max-width:90vw;aspect-ratio:9/16;
+  border-radius:24px;background:#000;object-fit:contain;
+  box-shadow:0 40px 90px rgba(0,0,0,.5);
+}
+.lightbox-video--wide{height:auto;width:min(1000px,92vw);aspect-ratio:16/9}
+.lightbox-video--landscape{height:auto;width:min(90vw,1280px,calc(82vh * 16 / 9));aspect-ratio:16/9}
+.lightbox-video--standard{height:auto;width:min(90vw,1100px,calc(82vh * 4 / 3));aspect-ratio:4/3}
+.lightbox-video--square{height:auto;width:min(90vw,82vh,820px);aspect-ratio:1/1}
+iframe.lightbox-video{border:0}
+@media (prefers-reduced-motion:reduce){
+  .video-lightbox,.video-lightbox-stage{transition:none}
+}
+
+.work-carousel-arrow{
+  position:absolute;top:50%;transform:translateY(-50%);z-index:2;
+  width:48px;height:48px;border-radius:50%;
+  border:1px solid rgba(120,0,0,.14);background:var(--white);
+  color:var(--red);font-size:18px;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;box-shadow:0 16px 34px rgba(0,0,0,.14);
+  transition:background-color .2s ease,color .2s ease,transform .2s ease;
+}
+.work-carousel-arrow:hover{background:var(--red-bright);color:var(--white);transform:translateY(-50%) scale(1.06)}
+.work-carousel-arrow--prev{left:clamp(-4px,1vw,12px)}
+.work-carousel-arrow--next{right:clamp(-4px,1vw,12px)}
+
+.work-carousel-dots{display:flex;justify-content:center;gap:9px;margin-top:28px}
+.work-carousel-dot{
+  width:7px;height:7px;border-radius:50%;padding:0;border:none;
+  background:rgba(120,0,0,.2);cursor:pointer;
+  transition:background-color .2s ease,transform .2s ease;
+}
+.work-carousel-dot.is-active{background:var(--red);transform:scale(1.35)}
+
+@media (prefers-reduced-motion:reduce){
+  .work-carousel-track,.work-slide{transition:none}
+}
+@media (max-width:640px){
+  .work-carousel-arrow{width:40px;height:40px;font-size:16px}
+  .work-slide{width:78vw}
+  .work-slide--portrait{width:52vw}
+  .work-slide--landscape{width:70vw}
+  .work-slide--standard{width:64vw}
+  .work-slide--square{width:58vw}
+}
+
+/* ---- testimonials: self-scrolling marquee ---- */
+.testimonials{padding:110px 0 140px;overflow:hidden}
+.testimonials-head{max-width:620px;margin:0 auto 56px;padding:0 clamp(20px,4vw,48px);text-align:center}
+.testimonials-head .eyebrow{justify-content:center;display:flex}
+.testimonials-head h2{font-size:clamp(30px,4.4vw,48px);font-weight:600;line-height:1.15;color:var(--text)}
+
+.testimonial-track-wrap{
+  mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent);
+  cursor:grab;
+  touch-action:pan-y;
+  overflow:hidden;
+  user-select:none;
+  -webkit-user-select:none;
+}
+.testimonial-track-wrap.dragging{cursor:grabbing}
+.testimonial-track{
+  display:flex;gap:24px;width:max-content;
+  will-change:transform;
+}
+.testimonial-track a,.testimonial-track img{-webkit-user-drag:none}
+.testimonial-card{
+  flex:none;width:400px;
+  border:1px solid rgba(120,0,0,.16);border-radius:24px;
+  padding:38px 34px;
+  display:flex;flex-direction:column;gap:20px;
+  background:var(--white);
+  box-shadow:0 10px 30px rgba(0,0,0,.04);
+}
+.testimonial-quote-mark{
+  width:34px;height:34px;border-radius:50%;
+  background:var(--ink);color:var(--white);
+  display:flex;align-items:center;justify-content:center;
+  font-size:20px;line-height:1;font-weight:700;
+}
+.testimonial-card p{font-size:17px;line-height:1.6;opacity:.85}
+.testimonial-meta{display:flex;flex-direction:column;gap:2px;padding-top:14px;border-top:1px solid rgba(120,0,0,.12)}
+.testimonial-meta strong{font-size:15px;font-weight:600}
+.testimonial-meta span{font-size:14px;opacity:.75}
+.testimonial-stars{font-size:15px;letter-spacing:.06em;color:var(--red)}
+@media (max-width:600px){
+  .testimonial-card{width:270px;padding:26px 22px}
+}
+
+/* ---- Rate Us: a clean, centered standalone card under the testimonials,
+   for visitors to leave their own star rating + optional review ---- */
+.rate-section{padding:0 clamp(20px,4vw,48px) 140px;display:flex;justify-content:center}
+.rate-us{
+  width:100%;max-width:560px;text-align:center;
+  padding:clamp(32px,5vw,48px);border-radius:28px;
+  background:var(--white);border:1px solid rgba(120,0,0,.14);
+  box-shadow:0 24px 50px rgba(0,0,0,.08);
+}
+.rate-us .eyebrow{justify-content:center;display:flex}
+.rate-title{font-size:clamp(26px,3.4vw,36px);font-weight:650;line-height:1.15;color:var(--text)}
+.rate-sub{margin-top:14px;font-size:15px;line-height:1.55;opacity:.7;max-width:420px;margin-left:auto;margin-right:auto}
+
+.rate-stars{display:flex;justify-content:center;gap:10px;margin:28px 0 24px}
+.rate-star{
+  background:none;border:none;cursor:pointer;padding:0;
+  font-size:32px;line-height:1;color:rgba(120,0,0,.2);
+  transition:color .15s ease,transform .15s ease;
+}
+.rate-star:hover{transform:scale(1.12)}
+.rate-star.is-active{color:var(--red)}
+
+.rate-field{display:block;text-align:left;margin-bottom:24px}
+.rate-field > span{display:block;font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;opacity:.85;margin-bottom:8px}
+.rate-field > span em{font-style:normal;opacity:.7;text-transform:none;letter-spacing:0}
+.rate-field input,
+.rate-field textarea{
+  width:100%;font-family:inherit;font-size:15px;color:var(--text);
+  padding:14px 16px;border-radius:14px;resize:none;min-height:90px;
+  border:1px solid rgba(120,0,0,.18);background:var(--white);
+  transition:border-color .2s ease,box-shadow .2s ease;
+}
+.rate-field input:focus,
+.rate-field textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(120,0,0,.08)}
+.rate-field-count{
+  display:block;margin-top:6px;text-align:right;
+  font-size:12px;opacity:.55;
+  transition:color .2s ease,opacity .2s ease;
+}
+.rate-field-count.is-limit{color:var(--red-bright);opacity:1}
+
+.rate-actions{display:flex;flex-direction:column;align-items:center;gap:12px}
+.rate-status{font-size:13px;opacity:.75}
+.rate-status.is-error{color:var(--red-bright);opacity:1}
+
+
+/* ---- phone proportions ---- */
+@media (max-width:900px){
+  .portfolio-hero{padding:96px 20px 64px;min-height:auto}
+  .hero-device{margin-top:40px}
+  .portfolio-hero .scroll-cue{display:none}
+  .niches{padding:48px 16px 40px}
+  .niches-head{margin-bottom:28px}
+  .work-carousel-viewport{padding:12px 0 36px}
+  .work-carousel-dots{margin-top:14px}
+  .testimonials{padding:56px 0 64px}
+  .testimonials-head{margin-bottom:30px}
+  .rate-section{padding:0 16px 72px}
+}
+@media (max-width:640px){
+  .niches-head h2{white-space:normal}
+  .work-slide--portrait{width:64vw}
+  .niche-filter{gap:8px;margin-bottom:26px}
+  .niche-filter-btn{padding:11px 16px;font-size:12px}
+  .work-carousel-arrow{width:38px;height:38px}
+}
+
+/* ---- the carousels as a looping wheel (positions set by the script) ---- */
+.work-carousel-viewport{perspective:1600px}
+.work-carousel-track{position:relative;transform:none !important;transform-style:preserve-3d;transition:height .5s cubic-bezier(.19,1,.22,1)}
+.work-slide-tag{max-width:calc(100% - 32px)}
+.work-slide-tag-text{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.work-carousel-track .work-slide{
+  position:absolute;left:50%;top:50%;
+  transition:transform .6s cubic-bezier(.19,1,.22,1),opacity .5s ease;
+  will-change:transform;
+}
+/* ---- phones: the hero is exactly one screen. PORTFOLIO. stays on one
+   line and runs edge to edge (sized from the screen width), the iPad
+   sits under it, narrower than the title, and the next section only
+   shows once you scroll. ---- */
+@media (max-width:600px){
+  .portfolio-hero{
+    min-height:100vh;min-height:100svh;
+    justify-content:center;
+    padding:56px 14px calc(104px + env(safe-area-inset-bottom));
+  }
+  .portfolio-hero .hero-kicker{margin-bottom:8px}
+  .portfolio-title{
+    font-size:calc((100vw - 28px) / 6.4);
+    line-height:1;letter-spacing:-.04em;white-space:nowrap;
+  }
+  .portfolio-sub{margin-top:14px;font-size:15px;max-width:none}
+  .hero-device{margin-top:30px;gap:16px}
+  .hero-device-frame{width:max(210px,min(66vw,calc((100svh - 420px) * 1.333)))}
+}
+
+
+
+/* each section: a plain-English line under the title, then a price and
+   one clear button after the videos */
+.niches-head p{max-width:560px;margin:0 auto;line-height:1.55}
+.niches-cta{
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:12px 18px;
+  margin-top:34px;text-align:center;
+}
+.niches-cta-price{
+  font-family:var(--font-mono);font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--text-soft);
+}
+.niches-cta-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  padding:15px 24px;border-radius:999px;
+  background:var(--red);color:var(--white);
+  font-size:15px;font-weight:650;
+  box-shadow:0 12px 26px rgba(120,0,0,.22);
+  transition:background-color .2s ease;
+}
+.niches-cta-btn:hover{background:var(--red-bright)}
+/* the result a video got (views, sign-ups), if one is given */
+.work-slide-result{
+  position:absolute;top:16px;left:16px;z-index:2;
+  padding:7px 12px;border-radius:999px;background:var(--red);color:var(--white);
+  font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:.04em;
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+@media (max-width:600px){
+  .niches-cta{flex-direction:column;gap:12px;margin-top:22px}
+  .niches-cta-btn{width:100%;justify-content:center;font-size:14.5px;padding:15px 18px}
+}
+/* ---- 3D (assets/portfolio-3d.js) ---- */
+/* the warp star field: one fixed canvas behind the whole page; it
+   replaces the hero's flat stars (the meteors stay) */
+.warp-field{position:fixed;inset:0;z-index:-1;pointer-events:none}
+.has-3d .portfolio-hero .hero-star{display:none}
+/* the iPad rises out of a tilt and settles flat, then tilts back as you
+   scroll away (--away, 0 to 1, set by the script) */
+.hero-device{perspective:1600px}
+.hero-device-tilt{
+  transform-style:preserve-3d;transform-origin:50% 100%;
+  transform:rotateX(calc(var(--away,0) * 22deg)) translateY(calc(var(--away,0) * -24px)) scale(calc(1 - var(--away,0) * .08));
+  will-change:transform;
+}
+@keyframes deviceLand{
+  from{opacity:0;transform:translateY(70px) rotateX(40deg) scale(.88)}
+  60%{opacity:1}
+  to{opacity:1;transform:none}
+}
+.has-3d .hero-device-frame{animation:deviceLand 1.5s cubic-bezier(.16,1,.3,1) .25s both}
+/* one sweep of light across the glass as it lands */
+.hero-device-screen::after{
+  content:'';position:absolute;inset:-20% -60%;z-index:2;pointer-events:none;
+  background:linear-gradient(105deg,transparent 40%,rgba(255,255,255,.28) 50%,transparent 60%);
+  transform:translateX(-70%);opacity:0;
+}
+.hero-device-frame.is-landed .hero-device-screen::after{animation:glassSweep 1.3s cubic-bezier(.4,0,.2,1) both}
+@keyframes glassSweep{0%{transform:translateX(-70%);opacity:1}100%{transform:translateX(70%);opacity:1}}
+/* carousels, testimonials and the rating card swing up from the same
+   tilt into place as they arrive (--in, 0 to 1, set by the script) */
+.has-3d [data-swing]{
+  transform-origin:50% 0;
+  transform:perspective(1400px) rotateX(calc((1 - var(--in,1)) * 28deg)) translateY(calc((1 - var(--in,1)) * 60px)) scale(calc(.93 + var(--in,1) * .07));
+  opacity:calc(.12 + var(--in,1) * .88);
+  will-change:transform,opacity;
+}
+@media (prefers-reduced-motion:reduce){
+  .has-3d .hero-device-frame{animation:none}
+  .hero-device-tilt,.has-3d [data-swing]{transform:none;opacity:1}
+}
+.rate-us .form-privacy{font-size:13px;color:var(--text-soft);margin-top:14px}
+.rate-us .form-privacy a{color:var(--text);text-decoration:underline;text-underline-offset:3px}
+.testimonial-name{display:block;margin-top:6px;font-weight:650;font-size:14px;color:var(--text)}
+.testimonial-name:empty{display:none}
+.testimonial-name:not(:empty)::before{content:"\2014\00a0"}
+.testimonials-test-tag{display:inline-block;margin-top:14px;padding:6px 12px;border-radius:999px;background:#fff3cd;color:#7a5a00;font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+.rate-honeypot{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;opacity:0}
+</style>
+</head>
+<body>
+
+<div class="cx-wrap" id="cxWrap" aria-hidden="true"></div>
+
+<nav class="nav" aria-label="Main">
+  <a href="index.html" class="nav-logo" aria-label="QUOVEX home"><span class="q-half">Q</span><span class="brand-dot">.</span></a>
+  <div class="nav-links">
+    <span class="nav-pill" aria-hidden="true"></span>
+    <a href="index.html"><span class="nl-full">Home</span><span class="nl-short">Home</span></a>
+    <a href="work.html" class="active" aria-current="page"><span class="nl-full">Portfolio</span><span class="nl-short">Work</span></a>
+    <a href="book.html"><span class="nl-full">Hire us</span><span class="nl-short">Hire us</span></a>
+  </div>
+  <a href="book.html#quote" data-contact="booking" class="nav-cta">Start a project</a>
+  <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <nav aria-label="Menu">
+    <a href="index.html" class="mm-link">Home</a>
+    <a href="work.html" class="mm-link">Portfolio</a>
+    <a href="book.html" class="mm-link">Hire us</a>
+  </nav>
+  <div class="mm-actions">
+    <a href="book.html#quote" data-contact="booking" class="mm-btn filled">Start a project</a>
+    <div class="mm-socials">
+      <a href="#" data-contact="instagram" class="social-icon" aria-label="QUOVEX on Instagram" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></svg><span class="social-label">Instagram</span></a>
+      <a href="#" data-contact="whatsapp" class="social-icon" aria-label="Message QUOVEX on WhatsApp" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg><span class="social-label">WhatsApp</span></a>
+      <a href="#" data-contact="email" hidden>Email</a>
+    </div>
+  </div>
+</div>
+
+<section class="portfolio-hero" id="portfolioHero">
+  <div class="hero-star-field" aria-hidden="true"></div>
+
+  <p class="hero-kicker">Our work</p>
+  <h1 class="portfolio-title">PORTFOLIO<span class="brand-dot">.</span></h1>
+  <p class="portfolio-sub">Videos that get you views and customers.</p>
+
+  <div class="hero-device" id="heroDevice">
+    <div class="hero-device-tilt">
+    <div class="hero-device-frame" id="heroDeviceFrame">
+      <span class="hero-device-cam" aria-hidden="true"></span>
+      <div class="hero-device-screen">
+        <!-- highlight reel built by tools/build_portfolio_reel.py -->
+        <video class="hero-reel" id="heroReel" muted autoplay loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Highlights from our edits" poster="assets/video/portfolio-reel-poster.jpg?v=1792945893">
+          <source src="assets/video/portfolio-reel-sm.mp4?v=1792945893" type="video/mp4" media="(max-width: 700px)">
+          <source src="assets/video/portfolio-reel.mp4?v=1792945893" type="video/mp4">
+        </video>
+      </div>
+    </div>
+    </div>
+    <a class="hero-device-more" href="#short-form">See every edit <span aria-hidden="true">&darr;</span></a>
+  </div>
+
+  <div class="scroll-cue" aria-hidden="true">
+    <span class="scroll-cue-track"><span class="scroll-cue-dot"></span></span>
+    <span class="scroll-cue-label">Scroll</span>
+  </div>
+</section>
+
+<section class="niches" id="short-form" data-carousel="short-form">
+  <div class="niches-head reveal">
+    <h2>Reels, TikToks &amp; Shorts<span class="alt-mark">.</span></h2>
+    <p>Short vertical videos for Instagram, TikTok and YouTube Shorts. Tap a video to watch it with sound.</p>
+  </div>
+  <div class="work-carousel" data-swing>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--prev" aria-label="Previous">&larr;</button>
+    <div class="work-carousel-viewport">
+      <div class="work-carousel-track"></div>
+    </div>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--next" aria-label="Next">&rarr;</button>
+  </div>
+  <div class="work-carousel-dots"></div>
+  <div class="niches-cta reveal">
+    <span class="niches-cta-price">Priced per project</span>
+    <a class="niches-cta-btn" href="book.html?package=short#packages">Want a video like this? Get a price <span aria-hidden="true">&rarr;</span></a>
+  </div>
+</section>
+
+<section class="niches" id="saas" data-carousel="saas">
+  <div class="niches-head reveal">
+    <h2>Software &amp; app demos<span class="alt-mark">.</span></h2>
+    <p>Videos that show what your app or software does, so people sign up. Tap a video to watch it with sound.</p>
+  </div>
+  <div class="work-carousel" data-swing>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--prev" aria-label="Previous">&larr;</button>
+    <div class="work-carousel-viewport">
+      <div class="work-carousel-track"></div>
+    </div>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--next" aria-label="Next">&rarr;</button>
+  </div>
+  <div class="work-carousel-dots"></div>
+  <div class="niches-cta reveal">
+    <span class="niches-cta-price">Fixed-price packages</span>
+    <a class="niches-cta-btn" href="book.html?package=saas#packages">Want a video like this? Get a price <span aria-hidden="true">&rarr;</span></a>
+  </div>
+</section>
+
+<section class="niches" id="long-form" data-carousel="long-form">
+  <div class="niches-head reveal">
+    <h2>YouTube videos &amp; podcasts<span class="alt-mark">.</span></h2>
+    <p>Longer videos and podcast episodes, edited so people keep watching. Tap a video to watch it with sound.</p>
+  </div>
+  <div class="work-carousel" data-swing>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--prev" aria-label="Previous">&larr;</button>
+    <div class="work-carousel-viewport">
+      <div class="work-carousel-track"></div>
+    </div>
+    <button type="button" class="work-carousel-arrow work-carousel-arrow--next" aria-label="Next">&rarr;</button>
+  </div>
+  <div class="work-carousel-dots"></div>
+  <div class="niches-cta reveal">
+    <span class="niches-cta-price">Priced per project</span>
+    <a class="niches-cta-btn" href="book.html?package=long#packages">Want a video like this? Get a price <span aria-hidden="true">&rarr;</span></a>
+  </div>
+</section>
+
+<div class="video-lightbox" id="videoLightbox" aria-hidden="true">
+  <div class="video-lightbox-backdrop" id="videoLightboxBackdrop"></div>
+  <button type="button" class="video-lightbox-close" id="videoLightboxClose" aria-label="Close">&times;</button>
+  <div class="video-lightbox-stage" id="lightboxStage"></div>
+</div>
+
+<section class="testimonials" id="testimonials" hidden>
+  <div class="testimonials-head reveal">
+    <div class="eyebrow">Testimonials</div>
+    <h2>What clients say.</h2>
+  </div>
+  <div class="testimonial-track-wrap" data-swing>
+    <div class="testimonial-track" id="testimonialTrack"></div>
+  </div>
+</section>
+
+<section class="rate-section" id="add-review">
+  <div class="rate-us" data-swing>
+    <div class="eyebrow">Add a review</div>
+    <h2 class="rate-title">Worked with us<span class="brand-dot">?</span></h2>
+    <p class="rate-sub">Tell us how it went. It helps us, and it helps other people decide.</p>
+
+    <input class="rate-honeypot" type="text" id="rateGotcha" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true"/>
+    <div class="rate-stars" id="rateStars" role="radiogroup" aria-label="Rating out of 5">
+      <button type="button" class="rate-star" data-value="1" aria-label="1 star">&#9733;</button>
+      <button type="button" class="rate-star" data-value="2" aria-label="2 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="3" aria-label="3 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="4" aria-label="4 stars">&#9733;</button>
+      <button type="button" class="rate-star" data-value="5" aria-label="5 stars">&#9733;</button>
+    </div>
+
+    <label class="rate-field">
+      <span>Your name</span>
+      <input type="text" id="rateName" maxlength="80" autocomplete="name" placeholder="Your name (and company, if you like)"/>
+    </label>
+
+    <label class="rate-field">
+      <span>Your review <em>(optional)</em></span>
+      <textarea id="rateComment" rows="4" maxlength="500" placeholder="What stood out, good or bad?"></textarea>
+      <span class="rate-field-count" id="rateCommentCount">0 / 60 words</span>
+    </label>
+
+    <div class="rate-actions">
+      <button type="button" class="btn btn-filled" id="rateSubmit">Submit review <span class="arrow">&rarr;</span></button>
+      <span class="rate-status" id="rateStatus" aria-live="polite"></span>
+    </div>
+    <p class="form-privacy">Your review may appear on our website. <a href="privacy.html">Privacy policy</a></p>
+  </div>
+</section>
+
+<footer id="footer" class="footer">
+  <h2 class="headline reveal">Let&rsquo;s work together.</h2>
+
+  <div class="footer-actions">
+    <div class="footer-btns">
+      <a href="book.html#quote" data-contact="booking" class="btn btn-filled">Start a project <span class="arrow">→</span></a>
+      <a href="#" data-contact="email" class="btn btn-outline" hidden>Email us</a>
+    </div>
+    <div class="footer-socials">
+      <a href="#" data-contact="instagram" class="social-icon" aria-label="QUOVEX on Instagram" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="1.9"/><circle cx="17.4" cy="6.6" r="1.25" fill="currentColor"/></svg><span class="social-label">Instagram</span></a>
+      <a href="#" data-contact="whatsapp" class="social-icon" aria-label="Message QUOVEX on WhatsApp" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm0 18.15c-1.48 0-2.93-.4-4.2-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.2 8.2 0 0 1-1.26-4.38c0-4.54 3.7-8.24 8.25-8.24 4.54 0 8.24 3.7 8.24 8.24 0 4.55-3.7 8.24-8.24 8.24zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.78.97-.14.17-.29.19-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.02-.38.11-.51.11-.11.25-.29.37-.43.13-.14.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.41-.42-.56-.43h-.48c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07 0 1.22.89 2.4 1.01 2.56.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.14-1.18-.06-.1-.22-.16-.47-.28z"/></svg><span class="social-label">WhatsApp</span></a>
+    </div>
+  </div>
+
+  <h2 class="footer-logo">QUOVEX<span class="brand-dot">.</span></h2>
+
+  <nav class="footer-links" aria-label="Footer">
+    <a href="index.html">Home</a>
+    <a href="work.html">Portfolio</a>
+    <a href="book.html">Hire us</a>
+    <a href="book.html#quote">Get a quote</a>
+    <a href="privacy.html">Privacy</a>
+  </nav>
+
+  <div class="footer-credits">
+    <span>&copy;2026 QUOVEX. All rights reserved.</span>
+    <span>Video editing</span>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="#" data-contact="whatsapp" aria-label="Chat on WhatsApp" hidden>
+  <svg viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
+</a>
+
+
+<script src="assets/notify.js?v=2"></script>
+<script src="assets/site.js?v=33"></script>
+<script src="assets/portfolio-3d.js?v=1"></script>
+<script>
+/* Three "peek" carousels (long form, short form, SaaS) sharing one
+   lightbox. In each, the active video is centered and quietly plays a
+   muted preview, its neighbours dimmed at the edges. Tap the active one to
+   open it large, with sound and full controls; tap a neighbour (or use the
+   arrows, dots, arrow keys or a swipe) to bring it to the center. Previews
+   only load and play while their section is on screen.
+   An item is a local file ({src}), a Vimeo video ({vimeo: id}) or a
+   YouTube video ({youtube: id}); `orientation` on an item overrides its
+   section's default. YouTube videos are never downloaded or hosted here:
+   the card shows YouTube's own full-size thumbnail (unless a poster is
+   given), there's no muted preview (it'd mean loading YouTube's player
+   for every card), and tapping it opens YouTube's player in the
+   lightbox. That keeps long videos off the site's hosting entirely. */
+// To show a result on a video, add it to that item, e.g.
+//   {src: '...', label: 'New-build home tour', result: '1.2M views'}
+// It appears as a red badge in the video's top-left corner.
+var WORK = {
+  // These five are credited SAMPLES from other channels, there to fill
+  // the section while QUOVEX's own long-form edits are being made. Swap
+  // them for your own as soon as you have them (or drop "Sample ·" from a
+  // label if that edit is genuinely QUOVEX's).
+  'long-form': {orientation: 'landscape', emptyLabel: 'Long-form videos', items: [
+    {youtube: 'Kjf2GP56WjY', label: 'Sample · Fix & Fly Podcast'},
+    {youtube: '0Z_oOEYyA7U', label: 'Sample · RNZ'},
+    {youtube: 'XAArcUy2W7c', label: 'Sample · Centennial World Podcast'},
+    {youtube: 'mfmp5PGvGws', label: 'Sample · Moneyball'},
+    {youtube: 'HDixkBct8Yw', label: 'Sample · YouTube Creators Hub'}
+  ]},
+  'short-form': {orientation: 'landscape', items: [
+    {src: 'assets/video/realestate-1.mp4', orientation: 'portrait', poster: 'assets/video/realestate-1-poster.jpg', label: 'New-build home tour'},
+    {src: 'assets/video/ahmad-realestate.mp4', orientation: 'portrait', poster: 'assets/video/ahmad-realestate-poster.jpg', label: 'Office space for lease'},
+    {src: 'assets/video/lake-nona-home-tour.mp4', orientation: 'portrait', poster: 'assets/video/lake-nona-home-tour-poster.jpg', label: 'Luxury home tour in Lake Nona'},
+    {src: 'assets/video/zeeya-1.mp4', poster: 'assets/video/zeeya-1-poster.jpg', label: 'Credit card points, explained'},
+    {vimeo: '1200668823', orientation: 'standard', poster: 'https://i.vimeocdn.com/video/2167825357-f7bcdc3edb988dea383acf280ed686c0b1b4a6f11c2917e7e82efeb1e88ffb55-d_1280?region=us', label: 'The American Eagle jeans ad'},
+    {src: 'assets/video/zeeya-2.mp4', poster: 'assets/video/zeeya-2-poster.jpg', label: 'Why men feel villainized'},
+    {vimeo: '1181877278', orientation: 'portrait', poster: 'https://i.vimeocdn.com/video/2144353273-22c840a769ef027668577b43c07f142d2ad41240d8769287a4f7c3db62b1a4d1-d_1280?region=us', label: 'A call from a client'},
+    {src: 'assets/video/zeeya-3.mp4', poster: 'assets/video/zeeya-3-poster.jpg', label: 'Why prospects ask questions'},
+    {src: 'assets/video/rkd-1.mp4', orientation: 'portrait', poster: 'assets/video/rkd-1-poster.jpg', label: 'Losing customers to competitors'},
+    {src: 'assets/video/ahmad-clipping.mp4', orientation: 'portrait', poster: 'assets/video/ahmad-clipping-poster.jpg', label: 'Podcast clip: better sleep'},
+    {src: 'assets/video/ahmad-meta-ads.mp4', orientation: 'portrait', poster: 'assets/video/ahmad-meta-ads-poster.jpg', label: 'Ad for online coaches'},
+    {vimeo: '1192771400', orientation: 'standard', poster: 'https://i.vimeocdn.com/video/2158107741-d799487a6a4b359c94d35902f4d001d6245f573941594a5e1c6bbd8a28eabc57-d_1280?region=us', label: 'Trading without watching charts'},
+    {vimeo: '1215393676', poster: 'https://i.vimeocdn.com/video/2186553232-1a059b00734d93c236637756151c4869a0390c6d9eb44ace92bd3c9b7931190e-d_1280x720?region=us', label: 'Helping businesses grow'}
+  ]},
+  'saas': {orientation: 'landscape', items: [
+    {src: 'assets/video/saas-rerun.mp4', orientation: 'landscape', poster: 'assets/video/saas-rerun-poster.jpg', label: 'AI that automates your tasks'},
+    {src: 'assets/video/saas-babbel.mp4', orientation: 'landscape', poster: 'assets/video/saas-babbel-poster.jpg', label: 'Babbel: AI language lessons'},
+    {src: 'assets/video/saas-grammarly.mp4', orientation: 'landscape', poster: 'assets/video/saas-grammarly-poster.jpg', label: 'Grammarly: AI writing help'},
+    {src: 'assets/video/saas-gemini.mp4', orientation: 'landscape', poster: 'assets/video/saas-gemini-poster.jpg', label: 'Gemini: AI research reports'},
+    {src: 'assets/video/saas-codxna.mp4', orientation: 'landscape', poster: 'assets/video/saas-codxna-poster.jpg', label: 'AI assistant for everyday questions'},
+    {src: 'assets/video/saas-seo.mp4', orientation: 'square', poster: 'assets/video/saas-seo-poster.jpg', label: 'SEO tool: fix your site fast'},
+    {src: 'assets/video/saas-fashion.mp4', orientation: 'landscape', poster: 'assets/video/saas-fashion-poster.jpg', label: 'AI landing page builder'}
+  ]}
+};
+
+(function(){
+  var lightbox = document.getElementById('videoLightbox');
+  var lightboxStage = document.getElementById('lightboxStage');
+  var lightboxClose = document.getElementById('videoLightboxClose');
+  var lightboxBackdrop = document.getElementById('videoLightboxBackdrop');
+  var carousels = [];
+  var activeCarousel = null;
+
+  function buildCarousel(section, config){
+    var ITEMS = config.items;
+    var carousel = section.querySelector('.work-carousel');
+    var track = section.querySelector('.work-carousel-track');
+    var viewport = section.querySelector('.work-carousel-viewport');
+    var dotsWrap = section.querySelector('.work-carousel-dots');
+    var prevBtn = section.querySelector('.work-carousel-arrow--prev');
+    var nextBtn = section.querySelector('.work-carousel-arrow--next');
+
+    if(!ITEMS.length){
+      var empty = document.createElement('div');
+      empty.className = 'work-empty';
+      empty.innerHTML = '<h3></h3><p>We&rsquo;re putting the first ones together now. Want yours to be one of them?</p>' +
+        '<a href="book.html#quote" data-contact="booking" class="btn btn-filled">Start a project <span class="arrow">&rarr;</span></a>';
+      empty.querySelector('h3').textContent = (config.emptyLabel || 'These videos') + ' are on the way.';
+      carousel.replaceWith(empty);
+      dotsWrap.remove();
+      return null;
+    }
+    if(ITEMS.length < 2){ prevBtn.hidden = true; nextBtn.hidden = true; dotsWrap.hidden = true; }
+
+    var current = 0;
+    var inView = false;
+    var slides = [], videos = [], dots = [];
+
+    ITEMS.forEach(function(item, i){
+      var slide = document.createElement('div');
+      slide.className = 'work-slide work-slide--' + (item.orientation || config.orientation);
+      slide.setAttribute('role', 'button');
+      slide.setAttribute('tabindex', '0');
+      slide.setAttribute('aria-label', item.label + ': play with sound');
+      slide.innerHTML =
+        (item.vimeo || item.youtube ? '<img class="work-slide-poster" alt="">' : '<video muted loop playsinline preload="none"></video>') +
+        '<span class="work-slide-play" aria-hidden="true">&#9654;</span>' +
+        '<span class="work-slide-tag"><span class="work-slide-tag-dot"></span></span>';
+      var v;
+      if(item.youtube){
+        // just the thumbnail; the player only loads when it's opened
+        v = {slide: slide, youtube: item.youtube};
+        var img = slide.querySelector('img');
+        img.src = item.poster || 'https://i.ytimg.com/vi/' + item.youtube + '/maxresdefault.jpg';
+        img.loading = 'lazy';
+      } else if(item.vimeo){
+        // stands in for a <video>: the muted Vimeo preview is only mounted while it should play
+        v = {slide: slide, vimeo: item.vimeo, frame: null};
+        slide.querySelector('img').src = item.poster;
+      } else {
+        v = slide.querySelector('video');
+        v.poster = item.poster;
+        v.dataset.src = item.src;
+      }
+      var tagText = document.createElement('span');
+      tagText.className = 'work-slide-tag-text';
+      tagText.textContent = item.label;
+      slide.querySelector('.work-slide-tag').appendChild(tagText);
+      // optional result, e.g. result: '1.2M views' — shown as a badge on the video
+      if(item.result){
+        var res = document.createElement('span');
+        res.className = 'work-slide-result';
+        res.textContent = item.result;
+        slide.appendChild(res);
+      }
+      slide.addEventListener('click', function(){ if(i === current) openLightbox(api, i); else goTo(i); });
+      slide.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); if(i === current) openLightbox(api, i); else goTo(i); }
+      });
+      track.appendChild(slide);
+      slides.push(slide);
+      videos.push(v);
+
+      var dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'work-carousel-dot';
+      dot.setAttribute('aria-label', 'Show ' + item.label);
+      dot.addEventListener('click', function(){ goTo(i); });
+      dotsWrap.appendChild(dot);
+      dots.push(dot);
+    });
+
+    function syncPlayback(){
+      var paused = activeCarousel !== null;
+      videos.forEach(function(v, i){
+        var shouldPlay = inView && !paused && i === current;
+        if(v.youtube){
+          return;
+        } else if(v.vimeo){
+          if(shouldPlay && !v.frame){
+            v.frame = document.createElement('iframe');
+            v.frame.src = 'https://player.vimeo.com/video/' + v.vimeo + '?background=1&autoplay=1&loop=1&muted=1&dnt=1';
+            v.frame.allow = 'autoplay; fullscreen; picture-in-picture';
+            v.frame.setAttribute('tabindex', '-1');
+            v.frame.setAttribute('aria-hidden', 'true');
+            v.slide.insertBefore(v.frame, v.slide.firstChild.nextSibling);
+          } else if(!shouldPlay && v.frame){
+            v.frame.remove();
+            v.frame = null;
+          }
+        } else if(shouldPlay){
+          if(!v.getAttribute('src')) v.setAttribute('src', v.dataset.src);
+          v.play().catch(function(){});
+        } else {
+          v.pause();
+        }
+      });
+    }
+
+    /* The carousel is a wheel: every video sits at a signed distance from
+       the centre one (wrapping round, so the last video is the first one's
+       left-hand neighbour), and is placed beside its neighbours according
+       to their real widths, angled away and pushed back a little for depth.
+       Videos more than two steps out are hidden. A video that wraps from
+       one end to the other jumps there instantly instead of sliding across
+       the middle. */
+    var GAP = 28, SIDE_SCALE = .86;
+    var lastOffset = [];
+    function offsetOf(k){
+      var n = slides.length;
+      var d = ((k - current) % n + n) % n;
+      if(d > n / 2) d -= n;
+      return d;
+    }
+    function layout(){
+      var n = slides.length;
+      var widths = slides.map(function(sl){ return sl.offsetWidth; });
+      // as tall as the videos currently on show (the centre one and its
+      // neighbours), so a single tall vertical video elsewhere in the loop
+      // doesn't leave a big gap around wide ones
+      var maxH = 0;
+      slides.forEach(function(sl, k){ if(Math.abs(offsetOf(k)) <= 1) maxH = Math.max(maxH, sl.offsetHeight); });
+      track.style.height = maxH + 'px';
+      function spanTo(d){
+        // distance from the centre of the middle video to the centre of the
+        // video d steps away, walking through the ones in between
+        var dir = d > 0 ? 1 : -1, x = widths[current] / 2 + GAP;
+        for(var j = 1; j < Math.abs(d); j++){
+          x += widths[(current + dir * j + n * 4) % n] * SIDE_SCALE + GAP;
+        }
+        x += widths[(current + d + n * 4) % n] * SIDE_SCALE / 2;
+        return dir * x;
+      }
+      slides.forEach(function(sl, k){
+        var d = offsetOf(k), ad = Math.abs(d);
+        var x = d === 0 ? 0 : spanTo(d);
+        var jump = lastOffset[k] !== undefined && Math.abs(lastOffset[k] - d) > 1;
+        if(jump){ sl.style.transition = 'none'; }
+        sl.style.transform = 'translate(-50%,-50%) translateX(' + x.toFixed(1) + 'px) translateZ(' + (-ad * 70) + 'px) rotateY(' + (-d * 12) + 'deg) scale(' + (d === 0 ? 1 : SIDE_SCALE) + ')';
+        sl.style.opacity = d === 0 ? '1' : ad === 1 ? '.45' : ad === 2 ? '.18' : '0';
+        sl.style.zIndex = String(10 - ad);
+        sl.style.pointerEvents = ad <= 2 ? '' : 'none';
+        sl.setAttribute('aria-hidden', ad <= 2 ? 'false' : 'true');
+        if(jump){ sl.offsetHeight; sl.style.transition = ''; }
+        lastOffset[k] = d;
+      });
+    }
+
+    function goTo(i){
+      current = (i + slides.length) % slides.length;
+      slides.forEach(function(s, k){ s.classList.toggle('is-active', k === current); });
+      dots.forEach(function(d, k){ d.classList.toggle('is-active', k === current); });
+      layout();
+      syncPlayback();
+    }
+
+    prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+    nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+    window.addEventListener('resize', layout);
+
+    // swipe on touch screens
+    var startX = null;
+    viewport.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, {passive:true});
+    viewport.addEventListener('touchend', function(e){
+      if(startX === null) return;
+      var dx = e.changedTouches[0].clientX - startX;
+      if(Math.abs(dx) > 45) goTo(current + (dx < 0 ? 1 : -1));
+      startX = null;
+    });
+
+    if('IntersectionObserver' in window){
+      new IntersectionObserver(function(entries){
+        // a section only counts as "in view" once a fifth of it is on
+        // screen (merely touching the screen edge used to start a video)
+        inView = entries[0].isIntersecting && entries[0].intersectionRatio >= 0.2;
+        syncPlayback();
+      }, {threshold:[0, 0.2, 0.5]}).observe(section);
+    } else {
+      inView = true;
+    }
+
+    var api = {
+      section: section,
+      items: ITEMS,
+      orientation: config.orientation,
+      prev: function(){ goTo(current - 1); },
+      next: function(){ goTo(current + 1); },
+      sync: syncPlayback,
+      layout: layout
+    };
+
+    // start on the first video, so it's what people see first; the last
+    // ones wrap round to sit on its left
+    goTo(0);
+    return api;
+  }
+
+  document.querySelectorAll('[data-carousel]').forEach(function(section){
+    var config = WORK[section.dataset.carousel];
+    if(!config) return;
+    var c = buildCarousel(section, config);
+    if(c) carousels.push(c);
+  });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ carousels.forEach(function(c){ c.layout(); }); });
+
+  /* ---- lightbox: the full video, large, with sound and native controls ---- */
+  var lastFocus = null;
+  function openLightbox(c, i){
+    if(!lightbox || !lightboxStage) return;
+    lastFocus = document.activeElement;
+    activeCarousel = c;
+    carousels.forEach(function(k){ k.sync(); });
+    var item = c.items[i];
+    var orientation = item.orientation || c.orientation;
+    var v;
+    if(item.youtube){
+      v = document.createElement('iframe');
+      v.src = 'https://www.youtube-nocookie.com/embed/' + item.youtube + '?autoplay=1&rel=0&playsinline=1';
+      v.allow = 'autoplay; encrypted-media; fullscreen; picture-in-picture';
+      v.allowFullscreen = true;
+      v.referrerPolicy = 'strict-origin-when-cross-origin';
+      v.title = item.label;
+    } else if(item.vimeo){
+      v = document.createElement('iframe');
+      v.src = 'https://player.vimeo.com/video/' + item.vimeo + '?autoplay=1&dnt=1';
+      v.allow = 'autoplay; fullscreen; picture-in-picture';
+      v.allowFullscreen = true;
+      v.title = item.label;
+    } else {
+      v = document.createElement('video');
+      v.src = item.src;
+      v.poster = item.poster;
+      v.controls = true;
+      v.playsInline = true;
+    }
+    v.className = 'lightbox-video' + (orientation !== 'portrait' ? ' lightbox-video--' + orientation : '');
+    lightboxStage.innerHTML = '';
+    lightboxStage.appendChild(v);
+    lightbox.classList.add('is-open');
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lightbox-open', 'modal-open');
+    if(v.play) v.play().catch(function(){});
+    if(lightboxClose) lightboxClose.focus();
+  }
+  function closeLightbox(){
+    if(!lightbox || !lightbox.classList.contains('is-open')) return;
+    var v = lightboxStage.querySelector('video');
+    if(v){ v.pause(); v.removeAttribute('src'); v.load(); }
+    var f = lightboxStage.querySelector('iframe');
+    if(f) f.remove();
+    lightbox.classList.remove('is-open');
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('lightbox-open', 'modal-open');
+    setTimeout(function(){ lightboxStage.innerHTML = ''; }, 300);
+    activeCarousel = null;
+    carousels.forEach(function(k){ k.sync(); });
+    if(lastFocus) lastFocus.focus();
+  }
+  if(lightboxClose) lightboxClose.addEventListener('click', closeLightbox);
+  if(lightboxBackdrop) lightboxBackdrop.addEventListener('click', closeLightbox);
+
+  // arrow keys drive whichever carousel sits closest to the middle of the screen
+  function centeredCarousel(){
+    var mid = window.innerHeight / 2, best = null, bestDist = Infinity;
+    carousels.forEach(function(c){
+      var r = c.section.getBoundingClientRect();
+      if(r.bottom < 0 || r.top > window.innerHeight) return;
+      var d = Math.abs((r.top + r.bottom) / 2 - mid);
+      if(d < bestDist){ bestDist = d; best = c; }
+    });
+    return best;
+  }
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closeLightbox();
+    if(lightbox && lightbox.classList.contains('is-open')) return;
+    if(e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    if(/input|textarea/i.test((document.activeElement || {}).tagName)) return;
+    var c = centeredCarousel();
+    if(!c) return;
+    if(e.key === 'ArrowLeft') c.prev(); else c.next();
+  });
+})();
+
+/* Testimonials: draggable marquee. Auto-drifts left on its own; grabbing and
+   flinging it hands off to momentum that decays back into the steady drift,
+   like giving a wheel a spin. Only starts once real featured testimonials
+   have actually been loaded and inserted (see the fetch below) — it used
+   to run immediately against hardcoded cards, but there's nothing to
+   measure or scroll until the async fetch finishes. */
+function initTestimonialMarquee(){
+  var wrap = document.querySelector('.testimonial-track-wrap');
+  var track = document.getElementById('testimonialTrack');
+  if(!wrap || !track || !track.children.length) return;
+
+  var DURATION_MS = 34000;
+  var SETTLE_RATE = 0.03;
+  var MAX_SPEED_MULT = 9;
+  var realCards = Array.prototype.slice.call(track.children);
+
+  function addCloneSet(){
+    realCards.forEach(function(card){
+      var clone = card.cloneNode(true);
+      clone.setAttribute('aria-hidden', 'true');
+      track.appendChild(clone);
+    });
+  }
+
+  /* One clone set lets us measure the true loop distance (where the pattern
+     repeats — not simply half the total width, which is off by half a gap).
+     Then keep cloning until there's always a full viewport of content past
+     that point, so the visible window never runs past the end of real
+     content into blank track space (which read as "goes empty, then a card
+     pops in" on wide screens). */
+  addCloneSet();
+  var halfWidth = track.children[realCards.length].offsetLeft;
+  var baseSpeed = halfWidth > 0 ? -halfWidth / DURATION_MS : 0;
+
+  function ensureCoverage(){
+    if(halfWidth <= 0) return;
+    var needed = window.innerWidth + halfWidth + 200;
+    var guard = 0;
+    while(track.scrollWidth < needed && guard < 20){
+      addCloneSet();
+      guard++;
+    }
+  }
+  ensureCoverage();
+
+  var position = 0;
+  var velocity = baseSpeed;
+  var isDragging = false;
+  var dragStartX = 0;
+  var dragStartPos = 0;
+  var lastMoveX = 0;
+  var lastMoveT = 0;
+
+  function wrapPosition(){
+    if(halfWidth <= 0) return;
+    while(position <= -halfWidth) position += halfWidth;
+    while(position > 0) position -= halfWidth;
+  }
+
+  function applyTransform(){
+    track.style.transform = 'translateX(' + position.toFixed(2) + 'px)';
+  }
+
+  function onPointerDown(e){
+    isDragging = true;
+    wrap.classList.add('dragging');
+    dragStartX = e.clientX;
+    dragStartPos = position;
+    lastMoveX = e.clientX;
+    lastMoveT = performance.now();
+    velocity = 0;
+    if(wrap.setPointerCapture){ wrap.setPointerCapture(e.pointerId); }
+    e.preventDefault();
+  }
+
+  function onPointerMove(e){
+    if(!isDragging) return;
+    e.preventDefault();
+    var now = performance.now();
+    position = dragStartPos + (e.clientX - dragStartX);
+    wrapPosition();
+    applyTransform();
+
+    var dt = now - lastMoveT;
+    if(dt > 0){
+      velocity = (e.clientX - lastMoveX) / dt;
+    }
+    lastMoveX = e.clientX;
+    lastMoveT = now;
+  }
+
+  function onPointerUp(){
+    if(!isDragging) return;
+    isDragging = false;
+    wrap.classList.remove('dragging');
+    var maxSpeed = Math.abs(baseSpeed) * MAX_SPEED_MULT;
+    velocity = Math.max(-maxSpeed, Math.min(maxSpeed, velocity));
+  }
+
+  wrap.addEventListener('pointerdown', onPointerDown);
+  wrap.addEventListener('pointermove', onPointerMove);
+  wrap.addEventListener('pointerup', onPointerUp);
+  wrap.addEventListener('pointercancel', onPointerUp);
+  wrap.addEventListener('dragstart', function(e){ e.preventDefault(); });
+
+  var lastFrameT = null;
+  function frame(t){
+    if(lastFrameT === null) lastFrameT = t;
+    var dt = t - lastFrameT;
+    lastFrameT = t;
+    if(dt <= 0 || dt > 100) dt = 16.7;
+
+    if(!isDragging){
+      velocity += (baseSpeed - velocity) * SETTLE_RATE;
+      position += velocity * dt;
+      wrapPosition();
+      applyTransform();
+    }
+    requestAnimationFrame(frame);
+  }
+
+  applyTransform();
+  requestAnimationFrame(frame);
+
+  window.addEventListener('resize', function(){
+    halfWidth = track.children[realCards.length].offsetLeft;
+    baseSpeed = halfWidth > 0 ? -halfWidth / DURATION_MS : 0;
+    ensureCoverage();
+  });
+}
+
+/* Supabase config, used by the testimonials and the "Rate Us" widget below (and by rate.html). Fill these in from
+   your Supabase project's Settings → Data API page — see ../.env and
+   ../supabase_setup.sql in the project root for exactly where each value
+   comes from and the table setup. The anon key is meant to be public in
+   client-side code like this; it's the RLS policies on the tables (see
+   supabase_setup.sql) that keep the data safe, not secrecy of this key. */
+var SUPABASE_URL = 'https://ghcmkggcvseotyinxelt.supabase.co';
+var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdoY21rZ2djdnNlb3R5aW54ZWx0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA1OTU1ODEsImV4cCI6MjEwNjE3MTU4MX0.NF6o6XE7wH3tB1xUKyahqYQ3LYmXwbbN_gC9QcWO5NM';
+
+// plain-email backup for reviews (used if the designed emails in assets/notify.js fail)
+var WEB3FORMS_ACCESS_KEY = 'ce40194a-41d3-4011-ab6b-70672f2e3e74';
+
+function supabaseInsert(table, row){
+  return fetch(SUPABASE_URL + '/rest/v1/' + table, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=minimal'
+    },
+    body: JSON.stringify(row)
+  }).then(function(res){
+    if(!res.ok) throw new Error('Supabase insert failed: ' + res.status);
+  });
+}
+
+/* Testimonials: pulled live from Supabase — only ratings the admin panel
+   has marked "featured" ever show here, and only ones that actually have
+   review text (a star-only rating has nothing to quote). The whole
+   section stays hidden if there's nothing real to show yet — no
+   fabricated/placeholder testimonials as a fallback. */
+(function(){
+  var section = document.getElementById('testimonials');
+  var track = document.getElementById('testimonialTrack');
+  if(!section || !track) return;
+  if(!SUPABASE_URL || SUPABASE_URL === 'YOUR_SUPABASE_URL') return;
+
+  function starString(n){
+    n = Math.max(0, Math.min(5, Math.round(n)));
+    return new Array(n + 1).join('★') + new Array(5 - n + 1).join('☆');
+  }
+
+  /* TEST MODE: open the page as work.html?testreviews to fill the strip
+     with these sample cards and check the loop. They exist only in this
+     page's code for that address: never saved to the database, never
+     shown to normal visitors. */
+  var TEST_MODE = /[?&]testreviews\b/.test(location.search);
+  var TEST_REVIEWS = [
+    {rating: 5, name: 'Daniel Whitaker', review: 'Sample review for testing the loop. Short and sweet.'},
+    {rating: 5, name: 'Priya Raman', review: 'Sample review for testing. This one is a bit longer, so the cards have different amounts of text and we can check they still line up neatly as they scroll past.'},
+    {rating: 4, name: 'Oliver Bennett', review: 'Sample review for testing: four stars.'},
+    {rating: 5, name: 'Sofia Marquez', review: 'Sample review for testing. Medium length, to sit between the short and the long ones.'},
+    {rating: 5, name: 'Hamza Qureshi', review: 'Sample review for testing the drag and fling on phones and laptops.'},
+    {rating: 4, name: 'Emily Clarke', review: 'Sample review for testing the point where the loop wraps around to the start.'}
+  ];
+  if(TEST_MODE){
+    var head = document.querySelector('.testimonials-head');
+    if(head){
+      var tag = document.createElement('p');
+      tag.className = 'testimonials-test-tag';
+      tag.textContent = 'Test mode: sample reviews, only visible at this test address';
+      head.appendChild(tag);
+    }
+  }
+  var query = 'ratings?select=*&featured=eq.true&review=not.is.null&order=created_at.desc';
+  fetch(SUPABASE_URL + '/rest/v1/' + query, {
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_ANON_KEY
+    }
+  })
+    .then(function(res){
+      if(!res.ok) throw new Error('Fetch failed: ' + res.status);
+      return res.json();
+    })
+    .catch(function(err){
+      // still lets test mode run if the database can't be reached
+      if(TEST_MODE){ console.warn('Testimonials failed to load:', err); return []; }
+      throw err;
+    })
+    .then(function(rows){
+      rows = (rows || []).filter(function(r){ return r.review && r.review.trim(); });
+      if(TEST_MODE) rows = rows.concat(TEST_REVIEWS);
+      // one copy of each review only (the marquee itself loops them);
+      // MIN_REVIEWS is how many featured reviews are needed before the
+      // section shows: 1 while testing, raise it once real ones come in
+      var MIN_REVIEWS = 1;
+      var seen = {};
+      rows = rows.filter(function(r){
+        var k = r.review.trim().toLowerCase();
+        if(seen[k]) return false;
+        seen[k] = true; return true;
+      });
+      if(rows.length < MIN_REVIEWS) return;
+
+      rows.forEach(function(r){
+        var card = document.createElement('div');
+        card.className = 'testimonial-card';
+        card.innerHTML =
+          '<span class="testimonial-quote-mark" aria-hidden="true">&ldquo;</span>' +
+          '<p></p>' +
+          '<div class="testimonial-meta"><span class="testimonial-stars" aria-label="' + r.rating + ' out of 5 stars">' + starString(r.rating) + '</span><span class="testimonial-name"></span></div>';
+        card.querySelector('p').textContent = r.review;
+        if(r.name) card.querySelector('.testimonial-name').textContent = r.name; // textContent, not innerHTML — never trust submitted review text as markup
+        track.appendChild(card);
+      });
+
+      section.hidden = false;
+      initTestimonialMarquee();
+    })
+    .catch(function(err){ console.warn('Testimonials failed to load:', err); });
+})();
+
+/* Review word limit: 60 words is plenty for a short "what stood out"
+   review without inviting an essay. Typing past the limit is blocked
+   outright (extra words just don't land) rather than only warning about
+   it after the fact — same pattern as the "Project details" field on the
+   Hire Us page. */
+(function(){
+  var WORD_LIMIT = 60;
+  var textarea = document.getElementById('rateComment');
+  var counter = document.getElementById('rateCommentCount');
+  if(!textarea || !counter) return;
+
+  function wordsOf(text){
+    var trimmed = text.trim();
+    return trimmed ? trimmed.split(/\s+/) : [];
+  }
+
+  function update(){
+    var words = wordsOf(textarea.value);
+    if(words.length > WORD_LIMIT){
+      var cursor = textarea.selectionStart;
+      var over = words.length - WORD_LIMIT;
+      textarea.value = words.slice(0, WORD_LIMIT).join(' ');
+      var newPos = Math.max(0, cursor - over);
+      textarea.setSelectionRange(newPos, newPos);
+      words = wordsOf(textarea.value);
+    }
+    counter.textContent = words.length + ' / ' + WORD_LIMIT + ' words';
+    counter.classList.toggle('is-limit', words.length >= WORD_LIMIT);
+  }
+
+  textarea.addEventListener('input', update);
+  update();
+})();
+
+/* Rate Us: click-to-select 1-5 star widget. Inserts a row into the
+   "ratings" table in Supabase — you'll see new ratings in the Supabase
+   dashboard under Table Editor → ratings. */
+(function(){
+  var stars = Array.prototype.slice.call(document.querySelectorAll('.rate-star'));
+  var group = document.getElementById('rateStars');
+  var comment = document.getElementById('rateComment');
+  var submitBtn = document.getElementById('rateSubmit');
+  var status = document.getElementById('rateStatus');
+  if(!stars.length || !group || !submitBtn || !status) return;
+
+  var selected = 0;
+
+  function paint(upTo){
+    stars.forEach(function(s){
+      s.classList.toggle('is-active', parseInt(s.dataset.value, 10) <= upTo);
+    });
+  }
+
+  stars.forEach(function(s){
+    s.addEventListener('mouseenter', function(){ paint(parseInt(s.dataset.value, 10)); });
+    s.addEventListener('click', function(){
+      selected = parseInt(s.dataset.value, 10);
+      paint(selected);
+      status.className = 'rate-status';
+      status.textContent = '';
+    });
+  });
+  group.addEventListener('mouseleave', function(){ paint(selected); });
+
+  submitBtn.addEventListener('click', function(){
+    if(!selected){
+      status.className = 'rate-status is-error';
+      status.textContent = 'Pick a star rating first.';
+      return;
+    }
+    // hidden bot trap: real people never see or fill it
+    var trap = document.getElementById('rateGotcha');
+    if(trap && trap.value){ status.className = 'rate-status'; status.textContent = 'Thanks for the rating!'; return; }
+    var nameInput = document.getElementById('rateName');
+    var reviewerName = nameInput ? nameInput.value.trim() : '';
+    if(nameInput && !reviewerName){
+      status.className = 'rate-status is-error';
+      status.textContent = 'Add your name first.';
+      nameInput.focus();
+      return;
+    }
+    submitBtn.disabled = true;
+    status.className = 'rate-status';
+    status.textContent = 'Sending…';
+
+    var rated = selected, reviewText = (comment && comment.value.trim()) || '';
+    var ratingRow = {
+      rating: selected,
+      review: (comment && comment.value.trim()) || null,
+      name: reviewerName || null
+    };
+    supabaseInsert('ratings', ratingRow)
+      .catch(function(err){
+        // the "name" column hasn't been added in Supabase yet: keep the review anyway
+        console.warn('Saving with name failed, saving without it:', err);
+        delete ratingRow.name;
+        return supabaseInsert('ratings', ratingRow);
+      })
+      .then(function(){
+        // email it too: the designed email to quovex.agency@gmail.com, or
+        // the plain one if that isn't set up (the rating is already saved)
+        var stars = '★★★★★☆☆☆☆☆'.slice(5 - rated, 10 - rated);
+        var params = {rating: String(rated), stars: stars, review: reviewText || 'No written review', name: reviewerName || 'No name given'};
+        var send = window.quovexNotify ? window.quovexNotify('review', params) : Promise.reject(new Error('not-configured'));
+        send.catch(function(){
+          return fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'Accept': 'application/json'},
+            body: JSON.stringify({
+              access_key: WEB3FORMS_ACCESS_KEY,
+              subject: 'New ' + rated + '-star review',
+              from_name: 'QUOVEX website',
+              name: params.name,
+              rating: stars + ' (' + rated + ' out of 5)',
+              review: params.review
+            })
+          });
+        }).catch(function(err){ console.warn('Review email failed:', err); });
+        status.className = 'rate-status';
+        status.textContent = 'Thanks for the ' + selected + '-star rating!';
+        if(comment) comment.value = '';
+        if(nameInput) nameInput.value = '';
+        selected = 0;
+        paint(0);
+      })
+      .catch(function(){
+        status.className = 'rate-status is-error';
+        status.textContent = 'Something went wrong. Please try again in a moment.';
+      })
+      .finally(function(){
+        submitBtn.disabled = false;
+      });
+  });
+})();
+
+/* Portfolio hero reel: make sure it plays on its own (some browsers
+   hold back autoplay until the page settles or the phone is in low
+   power mode, so retry on the first touch/scroll), and pause it while
+   it's off screen. */
+(function(){
+  var v = document.getElementById('heroReel');
+  if(!v) return;
+  v.muted = true; v.defaultMuted = true;
+  var onScreen = true;
+  function play(){ if(onScreen && !document.hidden){ var p = v.play(); if(p && p.catch) p.catch(function(){}); } }
+  ['touchstart','pointerdown','scroll','keydown'].forEach(function(ev){
+    window.addEventListener(ev, function once(){ if(v.paused) play(); window.removeEventListener(ev, once); }, {passive:true});
+  });
+  if('IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      onScreen = es[0].isIntersecting;
+      if(onScreen) play(); else v.pause();
+    }, {threshold:0.15}).observe(v);
+  }
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) v.pause(); else play(); });
+  v.addEventListener('canplay', play);
+  play();
+})();
+</script>
+</body>
+</html>
