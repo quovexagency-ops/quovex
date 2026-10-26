@@ -21,7 +21,6 @@ var QUOVEX_YOUTUBE = {
   // Portfolio: the iPad reel at the top (one link covers both sizes)
   'portfolio-reel.mp4': '',
   // Portfolio: Reels, TikToks & Shorts
-  'realestate-1.mp4': '',
   'ahmad-realestate.mp4': '',
   'lake-nona-home-tour.mp4': '',
   'zeeya-1.mp4': '',

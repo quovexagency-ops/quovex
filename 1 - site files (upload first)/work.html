@@ -561,9 +561,9 @@ iframe.lightbox-video{border:0}
       <span class="hero-device-cam" aria-hidden="true"></span>
       <div class="hero-device-screen">
         <!-- highlight reel built by tools/build_portfolio_reel.py -->
-        <video class="hero-reel" id="heroReel" muted autoplay loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Highlights from our edits" poster="assets/video/portfolio-reel-poster.jpg?v=1792945893">
-          <source src="assets/video/portfolio-reel-sm.mp4?v=1792945893" type="video/mp4" media="(max-width: 700px)">
-          <source src="assets/video/portfolio-reel.mp4?v=1792945893" type="video/mp4">
+        <video class="hero-reel" id="heroReel" muted autoplay loop playsinline preload="auto" disablepictureinpicture disableremoteplayback aria-label="Highlights from our edits" poster="assets/video/portfolio-reel-poster.jpg?v=1793035258">
+          <source src="assets/video/portfolio-reel-sm.mp4?v=1793035258" type="video/mp4" media="(max-width: 700px)">
+          <source src="assets/video/portfolio-reel.mp4?v=1793035258" type="video/mp4">
         </video>
       </div>
     </div>
@@ -640,15 +640,13 @@ iframe.lightbox-video{border:0}
   <div class="video-lightbox-stage" id="lightboxStage"></div>
 </div>
 
-<section class="testimonials" id="testimonials" hidden>
-  <div class="testimonials-head reveal">
-    <div class="eyebrow">Testimonials</div>
-    <h2>What clients say.</h2>
-  </div>
-  <div class="testimonial-track-wrap" data-swing>
-    <div class="testimonial-track" id="testimonialTrack"></div>
-  </div>
-</section>
+<!-- The "What clients say" reviews strip was taken off for now (no client
+     reviews yet). Its code is still below; to bring it back, put this
+     section back in:
+     <section class="testimonials" id="testimonials" hidden>
+       <div class="testimonials-head reveal"><div class="eyebrow">Testimonials</div><h2>What clients say.</h2></div>
+       <div class="testimonial-track-wrap" data-swing><div class="testimonial-track" id="testimonialTrack"></div></div>
+     </section> -->
 
 <section class="rate-section" id="add-review">
   <div class="rate-us" data-swing>
@@ -753,7 +751,6 @@ var WORK = {
     {youtube: 'HDixkBct8Yw', label: 'Sample · YouTube Creators Hub'}
   ]},
   'short-form': {orientation: 'landscape', items: [
-    {src: 'assets/video/realestate-1.mp4', orientation: 'portrait', poster: 'assets/video/realestate-1-poster.jpg', label: 'New-build home tour'},
     {src: 'assets/video/ahmad-realestate.mp4', orientation: 'portrait', poster: 'assets/video/ahmad-realestate-poster.jpg', label: 'Office space for lease'},
     {src: 'assets/video/lake-nona-home-tour.mp4', orientation: 'portrait', poster: 'assets/video/lake-nona-home-tour-poster.jpg', label: 'Luxury home tour in Lake Nona'},
     {src: 'assets/video/zeeya-1.mp4', poster: 'assets/video/zeeya-1-poster.jpg', label: 'Credit card points, explained'},

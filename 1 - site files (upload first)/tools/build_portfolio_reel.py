@@ -29,7 +29,7 @@ W, H, FPS = 1920, 1440, 30
 # 'fit' = show whole frame over a blurred backdrop. n = windows to take.
 ACTS = [
   {'id': 'short-form', 'label': 'Short-form', 'clips': [
-    ('realestate-1', 'pair', 2), ('rkd-1', 'pair', 2),
+    ('rkd-1', 'pair', 2),
     ('zeeya-1', 'fill', 1),
     ('lake-nona-home-tour', 'pair', 2), ('ahmad-meta-ads', 'pair', 2),
     ('zeeya-2', 'fill', 1),
