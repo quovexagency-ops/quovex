@@ -345,7 +345,7 @@ var QUOVEX_CONTACT = {
        surface runs continuously across the whole word. Bevel and shadow
        sizes are fractions of the font size, so the small nav logo and
        the huge wordmark look the same. */
-    var TEXTURED_SEL = '#heroLogo > span, .nav-logo > span, .portfolio-title, .hire-title, .blog-title';
+    var TEXTURED_SEL = '#heroLogo > span, .nav-logo > span, .portfolio-title, .hire-title, .blog-title, .clients-title';
     var texDefs = null;
     function r2(v){ return (Math.round(v * 100) / 100).toString(); }
     function textureFilter(id, fs, tx, ty, size){
