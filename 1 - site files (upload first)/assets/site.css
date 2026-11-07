@@ -629,3 +629,8 @@ img{max-width:100%;display:block}
 @media (max-width:900px){
   input,textarea,select{font-size:16px !important}
 }
+
+/* footer: inset from the sides so it reads as a card, and its dots stay white */
+.footer{margin:0 clamp(10px,2vw,28px)}
+.footer .brand-dot{color:var(--white) !important}
+@media (max-width:760px){.footer{margin:0 8px}}
