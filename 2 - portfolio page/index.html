@@ -694,6 +694,23 @@ p,.c-card-title,.tape-name{text-wrap:pretty;text-wrap:balance}
 .c-time-lede{margin-left:auto;margin-right:auto}
 .c-cross{transform-origin:50% 50%}
 .c-card{text-align:center}
+
+/* ---- each client's before / after box (shown only once real numbers are filled in) ---- */
+.tape-stats{
+  margin-top:24px;max-width:340px;padding:18px 20px 20px;border-radius:18px;text-align:left;
+  background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1px rgba(255,255,255,.14);
+}
+.tape-note .tape-stats{margin-left:auto;margin-right:auto}
+.ts-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.ts-what{font-family:var(--font-mono);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.66)}
+.ts-x{font-family:var(--font-display);font-weight:650;font-size:30px;line-height:1;letter-spacing:-.03em}
+.ts-row{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:10px;margin-top:12px;font-size:13px}
+.ts-row span{color:rgba(255,255,255,.7)}
+.ts-row b{font-variant-numeric:tabular-nums;font-weight:650}
+.ts-bar{height:8px;border-radius:8px;background:rgba(255,255,255,.12);overflow:hidden}
+.ts-bar i{display:block;height:100%;width:0;border-radius:inherit;background:rgba(255,255,255,.45);transition:width 1.1s cubic-bezier(.65,0,.25,1)}
+.ts-row--after .ts-bar i{background:#fff}
+.tape-stats.is-on .ts-bar i{width:var(--w)}
 </style>
 </head>
 <body>
@@ -2174,6 +2191,43 @@ function supabaseInsert(table, row){
     }
     last.nodeValue = t + rest;
   }
+})();
+</script>
+<script>
+/* ---- client results: before and after QUOVEX ----
+   Fill these in with each client's REAL numbers (from their Instagram /
+   YouTube / TikTok analytics). A box only appears once both numbers are
+   in, so nothing made-up ever shows. Example: before: 1800, after: 9400 */
+var TAPE_RESULTS = [
+  {name: 'Sunny',  what: 'Average views per video', before: 0, after: 0},
+  {name: 'Farjad', what: 'Average views per video', before: 0, after: 0},
+  {name: 'Azhar',  what: 'Average views per video', before: 0, after: 0}
+];
+(function(){
+  var tapes = document.querySelectorAll('.tape');
+  function fmt(n){ return n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'k' : String(n); }
+  var boxes = [];
+  TAPE_RESULTS.forEach(function(r, i){
+    if(!tapes[i] || !(r.before > 0) || !(r.after > 0)) return;
+    var note = tapes[i].querySelector('.tape-note');
+    var max = Math.max(r.before, r.after);
+    var box = document.createElement('div');
+    box.className = 'tape-stats';
+    box.innerHTML =
+      '<div class="ts-head"><span class="ts-what"></span><span class="ts-x"></span></div>' +
+      '<div class="ts-row"><span>Before</span><span class="ts-bar"><i style="--w:' + (r.before / max * 100).toFixed(1) + '%"></i></span><b>' + fmt(r.before) + '</b></div>' +
+      '<div class="ts-row ts-row--after"><span>With QUOVEX</span><span class="ts-bar"><i style="--w:' + (r.after / max * 100).toFixed(1) + '%"></i></span><b>' + fmt(r.after) + '</b></div>';
+    box.querySelector('.ts-what').textContent = r.what;
+    box.querySelector('.ts-x').textContent = (r.after / r.before).toFixed(1).replace(/\.0$/, '') + '×';
+    note.appendChild(box);
+    boxes.push(box);
+  });
+  if(!boxes.length) return;
+  if(!('IntersectionObserver' in window)){ boxes.forEach(function(b){ b.classList.add('is-on'); }); return; }
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('is-on'); io.unobserve(e.target); } });
+  }, {threshold: .5});
+  boxes.forEach(function(b){ io.observe(b); });
 })();
 </script>
 </body>

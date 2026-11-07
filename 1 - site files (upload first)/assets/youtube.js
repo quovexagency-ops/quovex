@@ -15,9 +15,8 @@ var QUOVEX_YOUTUBE = {
   'ad1-web.mp4': '',
   'ad2-web.mp4': '',
   'ad3-web.mp4': '',
-  // Home page: the two films
-  'quovex-intro.mp4': '',
-  'onboarding-web.mp4': '',
+  // Home page: the onboarding process film
+  'onboarding-process.mp4': '',
   // Portfolio: the iPad reel at the top (one link covers both sizes)
   'portfolio-reel.mp4': '',
   // Portfolio: Reels, TikToks & Shorts

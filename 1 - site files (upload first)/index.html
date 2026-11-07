@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8"/>
 <title>QUOVEX | Home</title>
-<meta name="description" content="QUOVEX edits videos for SaaS companies, founders and creators."/>
+<meta name="description" content="QUOVEX edits everyday videos (Reels, TikToks, YouTube) and SaaS videos for creators, businesses and software teams."/>
 <meta property="og:title" content="QUOVEX | Home"/>
-<meta property="og:description" content="QUOVEX edits videos for SaaS companies, founders and creators."/>
+<meta property="og:description" content="QUOVEX edits everyday videos (Reels, TikToks, YouTube) and SaaS videos for creators, businesses and software teams."/>
 <meta property="og:image" content="assets/og-quovex.jpg"/>
 <meta property="og:image:width" content="1200"/>
 <meta property="og:image:height" content="630"/>
@@ -655,7 +655,6 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 /* ---- two films side by side (stacked on phones): the QUOVEX intro and
    the onboarding walkthrough, each in the same cinema-style screen with
    a caption under it ---- */
-.films-br{display:none}
 .films-sub{text-wrap:balance;margin:14px auto 0;max-width:600px;text-align:center;font-size:17px;line-height:1.55;color:var(--text-soft)}
 .films{
   width:100%;max-width:1240px;margin-top:8px;
@@ -691,7 +690,6 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   .films-sub{font-size:16px;padding:0 6px}
 }
 @media (max-width:600px){
-  .films-br{display:inline}
   .films-title{font-size:clamp(26px,7.4vw,34px);line-height:1.12}
   .film .theater-play{width:62px;height:62px}
   .film .theater-corner{width:16px;height:16px}
@@ -773,6 +771,77 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   .services-head{text-align:center;justify-items:center}
   .services-intro{justify-self:center}
 }
+
+/* ===== growth card: on your own vs with QUOVEX ===== */
+.growth{padding:40px clamp(16px,4vw,48px) 90px}
+.growth-card{
+  --g-views:#ff4b55;--g-likes:#ff9aa1;--g-shares:#3f8cff;--g-comments:#9ec6ff;
+  position:relative;max-width:1080px;margin:0 auto;overflow:hidden;
+  padding:clamp(28px,4vw,52px);border-radius:30px;color:#fff;
+  background:
+    radial-gradient(60% 55% at 100% 0%,rgba(174,31,35,.35),transparent 70%),
+    radial-gradient(55% 60% at 0% 100%,rgba(0,48,73,.75),transparent 72%),
+    #120d0d;
+  box-shadow:0 0 0 1px rgba(255,255,255,.07) inset,0 40px 80px rgba(20,8,8,.28);
+}
+.growth-eyebrow{font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.6)}
+.growth-title{margin-top:14px;font-family:var(--font-display);font-weight:650;font-size:clamp(36px,5.4vw,64px);line-height:1;letter-spacing:-.035em}
+.growth-x{background:linear-gradient(100deg,#ff6b73,#ff9aa1 45%,#9ec6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.growth-sub{margin-top:16px;max-width:560px;font-size:17px;line-height:1.55;color:rgba(255,255,255,.66);text-wrap:balance}
+.growth-legend{list-style:none;display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:30px;font-family:var(--font-mono);font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.growth-legend li{display:flex;align-items:center;gap:8px}
+.growth-legend i{width:18px;height:4px;border-radius:4px;background:var(--c)}
+.growth-charts{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:22px}
+.gchart{margin:0;padding:20px 20px 12px;border-radius:20px;background:rgba(255,255,255,.035);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07)}
+.gchart--us{background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1px rgba(255,107,115,.28),0 20px 50px rgba(174,31,35,.18)}
+.gchart figcaption{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:10px}
+.gc-name{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:rgba(255,255,255,.55)}
+.gchart--us .gc-name{color:#fff}
+.gc-name svg{width:16px;height:16px}
+.gc-q{font-family:var(--font-display);font-weight:700;font-size:16px;color:#ff6b73}
+.gc-q .brand-dot{color:#fff !important}
+.gc-num{display:flex;align-items:baseline;gap:6px}
+.gc-num b{font-family:var(--font-display);font-weight:650;font-size:clamp(30px,3.6vw,46px);line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.gchart--now .gc-num b{color:rgba(255,255,255,.5)}
+.gc-num small{font-size:12px;color:rgba(255,255,255,.5)}
+.gc-svg{display:block;width:100%;height:auto;overflow:visible}
+.gc-svg .grid{stroke:rgba(255,255,255,.07);stroke-width:1}
+.gc-svg .tick{fill:rgba(255,255,255,.35);font:500 9px var(--font-mono);letter-spacing:.06em}
+.gc-svg .ln{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.4s cubic-bezier(.65,0,.25,1)}
+.gc-svg .ln.views{stroke-width:3.2}
+.gc-svg .area{opacity:0;transition:opacity .8s ease .9s}
+.growth-card.is-on .gc-svg .ln{stroke-dashoffset:0}
+.growth-card.is-on .gc-svg .area{opacity:1}
+.gchart--now .ln{opacity:.55}
+.gchart--now .gc-svg .area{opacity:0 !important}
+.growth-try{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px 16px;margin-top:26px}
+.growth-try label{font-size:15px;color:rgba(255,255,255,.75)}
+.growth-try output{font-family:var(--font-display);font-weight:650;font-size:24px;font-variant-numeric:tabular-nums}
+.growth-try input{
+  grid-column:1/-1;-webkit-appearance:none;appearance:none;width:100%;height:8px;border-radius:8px;margin:6px 0;
+  background:linear-gradient(90deg,#ff4b55,#ff9aa1 var(--p,33%),rgba(255,255,255,.12) var(--p,33%));
+  cursor:pointer;touch-action:pan-y;
+}
+.growth-try input::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:28px;border-radius:4px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.growth-try input::-moz-range-thumb{width:12px;height:28px;border:0;border-radius:4px;background:#fff;box-shadow:0 4px 14px rgba(0,0,0,.45)}
+.growth-try input:focus-visible{outline:2px solid #9ec6ff;outline-offset:6px}
+.growth-note{margin-top:18px;font-size:13px;line-height:1.55;color:rgba(255,255,255,.45);max-width:640px;text-wrap:pretty}
+@media (max-width:760px){
+  .growth{padding:24px 10px 64px}
+  .growth-card{padding:28px 20px 24px;border-radius:24px;text-align:center}
+  .growth-sub,.growth-note{margin-left:auto;margin-right:auto}
+  .growth-legend{justify-content:center}
+  .growth-charts{grid-template-columns:1fr;gap:12px}
+  .gchart{padding:16px 14px 8px;text-align:left}
+  .growth-try{text-align:left}
+}
+@media (prefers-reduced-motion:reduce){
+  .gc-svg .ln,.gc-svg .area{transition:none}
+}
+
+/* one film now: centred, larger, title always on one line */
+.films--one{grid-template-columns:minmax(0,1fr);max-width:960px;margin-left:auto;margin-right:auto}
+.films-title{white-space:nowrap}
 </style>
 </head>
 <body>
@@ -865,7 +934,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
         heroLogo.style.transition = '';
       })();
     </script>
-    <p class="slogan-cut">We edit videos<br/><span class="slogan-line">for <span class="rotate-word" id="rotateWord">SaaS teams</span>.</span></p>
+    <p class="slogan-cut">We edit videos<br/><span class="slogan-line">for <span class="rotate-word" id="rotateWord">creators</span>.</span></p>
   </div>
 
   <div class="hero-cta-group">
@@ -887,8 +956,8 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 <div class="marquee-wrap">
 <div class="marquee" aria-hidden="true">
   <div class="marquee-track">
-    <div class="marquee-group"><span>Launch videos</span><i>&#10022;</i><span class="is-outline">Reels &amp; Shorts</span><i>&#10022;</i><span>YouTube edits</span><i>&#10022;</i><span class="is-outline">Motion graphics</span><i>&#10022;</i><span class="is-outline">Captions</span><i>&#10022;</i></div>
-    <div class="marquee-group"><span>Launch videos</span><i>&#10022;</i><span class="is-outline">Reels &amp; Shorts</span><i>&#10022;</i><span>YouTube edits</span><i>&#10022;</i><span class="is-outline">Motion graphics</span><i>&#10022;</i><span class="is-outline">Captions</span><i>&#10022;</i></div>
+    <div class="marquee-group"><span>Everyday videos</span><i>&#10022;</i><span class="is-outline">SaaS demos</span><i>&#10022;</i><span>Reels &amp; Shorts</span><i>&#10022;</i><span class="is-outline">Launch videos</span><i>&#10022;</i><span>YouTube edits</span><i>&#10022;</i><span class="is-outline">Captions</span><i>&#10022;</i></div>
+    <div class="marquee-group"><span>Everyday videos</span><i>&#10022;</i><span class="is-outline">SaaS demos</span><i>&#10022;</i><span>Reels &amp; Shorts</span><i>&#10022;</i><span class="is-outline">Launch videos</span><i>&#10022;</i><span>YouTube edits</span><i>&#10022;</i><span class="is-outline">Captions</span><i>&#10022;</i></div>
   </div>
 </div>
 </div>
@@ -939,20 +1008,15 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 <section class="onboard-section" id="films">
   <div class="reel-head reveal">
     <div class="eyebrow">Meet QUOVEX</div>
-    <h2 class="reel-title films-title">Two films.<span class="films-br"><br/></span> Everything you need to know<span class="brand-dot">.</span></h2>
-    <p class="films-sub">Who we are in 40 seconds, then exactly how your first week with us goes.</p>
+    <h2 class="reel-title films-title">Onboarding process<span class="brand-dot">.</span></h2>
+    <p class="films-sub">Who we are, and exactly how your first week with us goes, from first message to first video.</p>
   </div>
 
-  <div class="films">
+  <div class="films films--one">
     <figure class="film reveal">
-      <figcaption class="film-caption">
-        <span class="film-num">Film 01</span>
-        <span class="film-title">Meet QUOVEX</span>
-        <span class="film-line">Who we are and what we make.</span>
-      </figcaption>
       <div class="theater">
-        <div class="theater-screen" id="theaterIntro" role="button" tabindex="0" aria-label="Play Meet QUOVEX with sound">
-          <video id="introVideo" src="assets/video/quovex-intro.mp4" poster="assets/video/quovex-intro-poster.jpg" playsinline preload="none"></video>
+        <div class="theater-screen" id="theaterScreen" role="button" tabindex="0" aria-label="Play Onboarding process with sound">
+          <video id="onboardVideo" src="assets/video/onboarding-process.mp4" poster="assets/video/onboarding-process-poster.jpg" playsinline preload="none"></video>
           <span class="theater-corner tl" aria-hidden="true"></span>
           <span class="theater-corner tr" aria-hidden="true"></span>
           <span class="theater-corner bl" aria-hidden="true"></span>
@@ -960,27 +1024,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
           <div class="theater-cover" aria-hidden="true">
             <span class="theater-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
           </div>
-          <span class="film-badge" aria-hidden="true">0:40</span>
-        </div>
-      </div>
-    </figure>
-    <figure class="film reveal">
-      <figcaption class="film-caption">
-        <span class="film-num">Film 02</span>
-        <span class="film-title">How onboarding works</span>
-        <span class="film-line">From first message to first video, in 5 steps.</span>
-      </figcaption>
-      <div class="theater">
-        <div class="theater-screen" id="theaterScreen" role="button" tabindex="0" aria-label="Play How onboarding works with sound">
-          <video id="onboardVideo" src="assets/video/onboarding-web.mp4" poster="assets/video/onboarding-poster.jpg" playsinline preload="none"></video>
-          <span class="theater-corner tl" aria-hidden="true"></span>
-          <span class="theater-corner tr" aria-hidden="true"></span>
-          <span class="theater-corner bl" aria-hidden="true"></span>
-          <span class="theater-corner br" aria-hidden="true"></span>
-          <div class="theater-cover" aria-hidden="true">
-            <span class="theater-play"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg></span>
-          </div>
-          <span class="film-badge" aria-hidden="true">0:30</span>
+          <span class="film-badge" aria-hidden="true">0:37</span>
         </div>
       </div>
     </figure>
@@ -1047,20 +1091,61 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   <div class="rw-more reveal"><a href="work.html" class="btn btn-outline">See all our work <span class="arrow">&rarr;</span></a></div>
 </section>
 
+<section class="growth" id="growth">
+  <div class="growth-card">
+    <div class="growth-head">
+      <p class="growth-eyebrow">What changes</p>
+      <div class="growth-title" role="heading" aria-level="2"><span class="growth-x" id="gxMult">3&times;</span> the views.</div>
+      <p class="growth-sub">Six months of posting on your own, next to six months with us editing. Drag the slider to start from your own numbers.</p>
+    </div>
+
+    <ul class="growth-legend" aria-label="What the lines show">
+      <li><i style="--c:var(--g-views)"></i>Views</li>
+      <li><i style="--c:var(--g-likes)"></i>Likes</li>
+      <li><i style="--c:var(--g-shares)"></i>Shares</li>
+      <li><i style="--c:var(--g-comments)"></i>Comments</li>
+    </ul>
+
+    <div class="growth-charts">
+      <figure class="gchart gchart--now">
+        <figcaption>
+          <span class="gc-name"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="2" y="2" width="12" height="12" rx="3" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 10.5l2-2 2 1.5 2.5-3.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>On your own</span>
+          <span class="gc-num"><b id="gNowNum">10k</b><small>views / month</small></span>
+        </figcaption>
+        <svg class="gc-svg" id="gNow" viewBox="0 0 320 170" role="img" aria-label="Your views, likes, shares and comments over six months, posting on your own"></svg>
+      </figure>
+      <figure class="gchart gchart--us">
+        <figcaption>
+          <span class="gc-name"><span class="gc-q">Q<span class="brand-dot">.</span></span>With QUOVEX</span>
+          <span class="gc-num"><b id="gUsNum">30k</b><small>views / month</small></span>
+        </figcaption>
+        <svg class="gc-svg" id="gUs" viewBox="0 0 320 170" role="img" aria-label="Your views, likes, shares and comments over six months, with QUOVEX editing"></svg>
+      </figure>
+    </div>
+
+    <div class="growth-try">
+      <label for="gSlider">Your views per month right now</label>
+      <output id="gOut" for="gSlider">10k</output>
+      <input type="range" id="gSlider" min="0" max="100" step="1" value="33"/>
+    </div>
+    <p class="growth-note">An illustration, not a promise. It assumes you post about three times as often, with stronger hooks, captions and pacing. Real results depend on your niche, your content and how often you post.</p>
+  </div>
+</section>
+
 <section class="theory-section">
   <div class="theory-head reveal">
     <div class="eyebrow">Why we do this</div>
-    <h2 class="theory-title">Why do good products get ignored<span class="alt-mark">?</span></h2>
+    <h2 class="theory-title">Why do good videos get ignored<span class="alt-mark">?</span></h2>
   </div>
 
   <div class="theory-body">
-    <p class="theory-p reveal">Most founders we talk to have a good product. Explaining it is the hard part. A stranger gives your video about eight seconds, or your homepage one scroll, and that&rsquo;s where a lot of products lose them: too many features, too much jargon, or a script written by someone who knows the product too well to explain it simply. <strong class="hl">That&rsquo;s the part we fix.</strong></p>
+    <p class="theory-p reveal">Most people we work with already have something worth watching: a creator with good ideas, a business with a story, a founder with a great product. Getting it across is the hard part. A stranger gives your video about eight seconds, and that&rsquo;s where most of them are lost: a slow start, too much talking, or an edit that doesn&rsquo;t keep them watching. <strong class="hl">That&rsquo;s the part we fix.</strong></p>
 
-    <p class="theory-p reveal">We make onboarding and launch videos, short clips for social, and longer YouTube videos. Your project doesn&rsquo;t get passed between five people. <strong>Whoever you talk to on day one is the one editing your video.</strong></p>
+    <p class="theory-p reveal">We edit everyday videos (Reels, TikToks, Shorts and YouTube) and SaaS videos (product demos, onboarding and launch videos). Your project doesn&rsquo;t get passed between five people. <strong>Whoever you talk to on day one is the one editing your video.</strong></p>
 
     <p class="theory-pull reveal">People don&rsquo;t buy what they don&rsquo;t understand.</p>
 
-    <p class="theory-p reveal">A big production budget doesn&rsquo;t help if nobody watches to the end. What counts is whether someone finishes your video, or reads your homepage instead of leaving. That&rsquo;s what we work on. <a href="work.html" class="theory-cta">See our work<span class="arrow">&nbsp;&rarr;</span></a></p>
+    <p class="theory-p reveal">A big production budget doesn&rsquo;t help if nobody watches to the end. What counts is whether someone finishes your video, follows you, or signs up instead of scrolling past. That&rsquo;s what we work on. <a href="work.html" class="theory-cta">See our work<span class="arrow">&nbsp;&rarr;</span></a></p>
   </div>
 </section>
 
@@ -1115,7 +1200,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 </a>
 
 
-<script src="assets/youtube.js?v=1"></script>
+<script src="assets/youtube.js?v=2"></script>
 <script src="assets/site.js?v=35"></script>
 <script>
 /* Hero tagline's rotating word: cycles through who the work is actually
@@ -1129,7 +1214,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(reduceMotion) return;
 
-  var WORDS = ['SaaS teams', 'founders', 'creators', 'startups'];
+  var WORDS = ['creators', 'SaaS teams', 'businesses', 'startups', 'brands'];
   var i = 0;
   var swapTimer = null;
 
@@ -1421,7 +1506,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   var autoProceedTimer = setTimeout(function(){ startSequence(null); }, 20000);
 })();
 
-/* The two films (QUOVEX intro + onboarding): each shows its still with
+/* The onboarding film (and any other .film): shows its still with
    a play button until it's clicked (or Enter/Space), then plays from the
    top with sound and play/pause controls. A film with a YouTube link in
    assets/youtube.js loads YouTube's player at that moment; otherwise it
@@ -1581,6 +1666,122 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   } else {
     playAll();
   }
+})();
+</script>
+<script>
+/* ---- growth card ----
+   Two small charts on the same scale: six months on your own, and six
+   months with QUOVEX editing. All four numbers share one log scale so
+   views (thousands) and comments (dozens) both read clearly. The slider
+   sets where you start; it only redraws eight short lines, so dragging
+   it costs next to nothing, and nothing runs while you scroll. */
+(function(){
+  var card = document.querySelector('.growth-card');
+  if(!card) return;
+  var NS = 'http://www.w3.org/2000/svg';
+  var now = document.getElementById('gNow'), us = document.getElementById('gUs');
+  var slider = document.getElementById('gSlider'), out = document.getElementById('gOut');
+  var nowNum = document.getElementById('gNowNum'), usNum = document.getElementById('gUsNum'), mult = document.getElementById('gxMult');
+  var W = 320, H = 170, PL = 30, PR = 6, PT = 8, PB = 20, MONTHS = 6;
+  // share of views that turn into each reaction: on your own, then with sharper edits
+  var RATE = {views: [1, 1], likes: [.035, .046], shares: [.004, .0075], comments: [.0025, .0042]};
+  var KEYS = ['comments', 'shares', 'likes', 'views'];
+  function fmt(n){
+    if(n >= 1e6) return (n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(/\.0$/, '') + 'M';
+    if(n >= 1e3) return (n / 1e3).toFixed(n < 1e4 ? 1 : 0).replace(/\.0$/, '') + 'k';
+    return String(Math.round(n));
+  }
+  function wob(m, k){ return 1 + .05 * Math.sin(m * 2.1 + k) + .03 * Math.sin(m * 4.7 + k * 1.7); }
+  // smaller accounts tend to grow faster in relative terms
+  function multFor(V){ var t = (Math.log10(V) - 3) / 3; return 4.2 - 2 * Math.max(0, Math.min(1, t)); }
+  function series(V, withUs){
+    var M = multFor(V), o = {};
+    KEYS.forEach(function(k, ki){
+      var pts = [];
+      for(var m = 0; m <= MONTHS; m++){
+        var t = m / MONTHS;
+        var v = withUs ? V * (1 + (M - 1) * (1 - Math.pow(1 - t, 1.6))) : V * (1 + .05 * t);
+        var r = RATE[k][withUs ? 1 : 0];
+        if(withUs) r = RATE[k][0] + (RATE[k][1] - RATE[k][0]) * Math.min(1, t * 1.6);
+        pts.push(v * r * (m ? wob(m, ki + (withUs ? 3 : 0)) : 1));
+      }
+      o[k] = pts;
+    });
+    return o;
+  }
+  function build(svg, withUs){
+    svg.textContent = '';
+    var defs = document.createElementNS(NS, 'defs');
+    defs.innerHTML = '<linearGradient id="gArea' + (withUs ? 'U' : 'N') + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4b55" stop-opacity=".32"/><stop offset="1" stop-color="#ff4b55" stop-opacity="0"/></linearGradient>';
+    svg.appendChild(defs);
+    var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'grid-g'); svg.appendChild(g);
+    var area = document.createElementNS(NS, 'path'); area.setAttribute('class', 'area'); area.setAttribute('fill', 'url(#gArea' + (withUs ? 'U' : 'N') + ')'); svg.appendChild(area);
+    var lines = {};
+    KEYS.forEach(function(k){
+      var p = document.createElementNS(NS, 'path');
+      p.setAttribute('class', 'ln ' + k); p.setAttribute('pathLength', '1');
+      p.setAttribute('stroke', 'var(--g-' + k + ')');
+      svg.appendChild(p); lines[k] = p;
+    });
+    return {svg: svg, grid: g, area: area, lines: lines};
+  }
+  var A = build(now, false), B = build(us, true);
+  function smooth(pts){
+    var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+    for(var i = 0; i < pts.length - 1; i++){
+      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' +
+           (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+    }
+    return d;
+  }
+  function draw(V){
+    var sa = series(V, false), sb = series(V, true);
+    // one shared scale for both charts, so the difference is honest
+    var lo = Math.log10(V * RATE.comments[0] * .7), hi = Math.log10(V * multFor(V) * 1.25);
+    function y(v){ return PT + (1 - (Math.log10(v) - lo) / (hi - lo)) * (H - PT - PB); }
+    function x(m){ return PL + m / MONTHS * (W - PL - PR); }
+    [[A, sa], [B, sb]].forEach(function(pair){
+      var c = pair[0], s = pair[1], gh = '';
+      for(var e = Math.ceil(lo); e <= Math.floor(hi); e++){
+        var yy = y(Math.pow(10, e)).toFixed(1);
+        gh += '<line class="grid" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + yy + '" y2="' + yy + '"/><text class="tick" x="0" y="' + (+yy + 3) + '">' + fmt(Math.pow(10, e)) + '</text>';
+      }
+      ['Now', '3 mo', '6 mo'].forEach(function(t, i){
+        gh += '<text class="tick" x="' + x(i * 3).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="' + (i === 0 ? 'start' : i === 2 ? 'end' : 'middle') + '">' + t + '</text>';
+      });
+      c.grid.innerHTML = gh;
+      KEYS.forEach(function(k){
+        var pts = s[k].map(function(v, m){ return [x(m), y(v)]; });
+        c.lines[k].setAttribute('d', smooth(pts));
+        if(k === 'views') c.area.setAttribute('d', smooth(pts) + ' L' + x(MONTHS) + ' ' + (H - PB) + ' L' + x(0) + ' ' + (H - PB) + ' Z');
+      });
+    });
+    var endNow = sa.views[MONTHS], endUs = sb.views[MONTHS];
+    nowNum.textContent = fmt(endNow); usNum.textContent = fmt(endUs);
+    mult.textContent = (endUs / endNow).toFixed(1).replace(/\.0$/, '') + '×';
+    out.textContent = fmt(V);
+  }
+  function fromSlider(){
+    var t = slider.value / 100;
+    slider.style.setProperty('--p', slider.value + '%');
+    // 1k to 1M, rounded to a tidy number
+    var V = Math.pow(10, 3 + 3 * t), mag = Math.pow(10, Math.floor(Math.log10(V)) - 1);
+    return Math.round(V / mag) * mag;
+  }
+  var raf = 0;
+  slider.addEventListener('input', function(){
+    if(raf) return;
+    raf = requestAnimationFrame(function(){ raf = 0; draw(fromSlider()); });
+  });
+  draw(fromSlider());
+  // draw the lines in once, when the card comes into view
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(es){
+      if(es[0].isIntersecting){ card.classList.add('is-on'); io.disconnect(); }
+    }, {threshold: .35});
+    io.observe(card);
+  } else card.classList.add('is-on');
 })();
 </script>
 </body>
