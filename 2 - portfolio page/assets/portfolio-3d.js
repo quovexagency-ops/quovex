@@ -133,8 +133,16 @@
   // the stars belong to the portfolio part: once the red client block reaches
   // the top of the screen they're switched off (nothing to see behind solid
   // red, and it spares the phone a full-screen layer under everything below)
-  var proofEl = document.getElementById('testimonials'), starsOn = true;
-  function starsWanted(){ return !proofEl || proofEl.getBoundingClientRect().top > 0; }
+  var proofEl = document.getElementById('testimonials'), starsOn = true, proofAbove = false;
+  // watched, not measured every frame: a thin line at the very top of the
+  // screen tells us when the red block has reached it
+  if(proofEl && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      var e = es[0];
+      proofAbove = e.isIntersecting || e.boundingClientRect.top < 0;
+    }, {rootMargin: '0px 0px -100% 0px'}).observe(proofEl);
+  }
+  function starsWanted(){ return !proofAbove; }
   function frame(now){
     if(!running) return;
     var dt = Math.min(0.05, (now - lastT) / 1000) || 0.016;
