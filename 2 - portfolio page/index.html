@@ -538,6 +538,9 @@ iframe.lightbox-video{border:0}
 .marker svg{position:absolute;overflow:visible}
 .marker path.ink{fill:var(--marker);stroke:none}
 .marker path.stk{fill:none;stroke:rgba(255,255,255,.14);stroke-linecap:round;stroke-linejoin:round}
+/* on the red block the pen writes in white */
+.marker path.ink.w{fill:#fff}
+.marker path.stk.w{stroke:rgba(120,0,0,.18)}
 
 /* where the navbar was: just the mark and a label */
 .c-top{
@@ -603,7 +606,7 @@ iframe.lightbox-video{border:0}
 .tape-frame.is-playing .tape-play{opacity:0;pointer-events:none}
 .tape-scrawl{
   position:absolute;z-index:3;top:-58px;left:-34px;
-  font-family:var(--marker-font);font-size:38px;line-height:1;color:var(--marker);
+  font-family:var(--marker-font);font-size:38px;line-height:1;color:#fff;
   transform:rotate(-9deg);pointer-events:none;
 }
 .tape--flip .tape-scrawl{left:auto;right:-30px;transform:rotate(7deg)}
@@ -1940,6 +1943,23 @@ function supabaseInsert(table, row){
     // the pieces: one ink path and one streak path per short stretch
     Array.prototype.slice.call(wrap.querySelectorAll('svg.piece')).forEach(function(el){ el.remove(); });
     var frag = document.createDocumentFragment();
+    // over the red block the pen writes in white: pieces inside it are white,
+    // pieces outside are black, and a piece crossing its edge gets both,
+    // each clipped to its own side, so the colour changes right at the edge
+    var pEl = document.querySelector('.proof'), pb = pEl ? box(pEl) : null;
+    var prx = phone ? 28 : 36, clipN = 0;
+    function mkClip(pc, d, rule){
+      var id = 'mk' + (++clipN), cp = document.createElementNS(NS, 'clipPath'), cpp = document.createElementNS(NS, 'path');
+      cp.setAttribute('id', id); cpp.setAttribute('d', d); if(rule) cpp.setAttribute('clip-rule', rule);
+      cp.appendChild(cpp); pc.appendChild(cp);
+      return 'url(#' + id + ')';
+    }
+    function rrect(x, y, w, h, r){
+      return 'M' + (x + r) + ' ' + y + 'H' + (x + w - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) +
+        'V' + (y + h - r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w - r) + ' ' + (y + h) +
+        'H' + (x + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + x + ' ' + (y + h - r) +
+        'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + r) + ' ' + y + 'Z';
+    }
     strokes.forEach(function(st){
       st.chunks = [];
       for(var a = 0; a < st.n; a += CHUNK){
@@ -1957,12 +1977,28 @@ function supabaseInsert(table, row){
         pc.setAttribute('viewBox', x0 + ' ' + y0 + ' ' + (x1 - x0) + ' ' + (y1 - y0));
         pc.setAttribute('width', x1 - x0); pc.setAttribute('height', y1 - y0);
         pc.style.left = x0 + 'px'; pc.style.top = y0 + 'px';
-        var ink = document.createElementNS(NS, 'path'), stk = document.createElementNS(NS, 'path');
-        ink.setAttribute('class', 'ink'); stk.setAttribute('class', 'stk');
+        var inks = [], stk = document.createElementNS(NS, 'path');
+        var hit = pb && x1 > pb.x && x0 < pb.x + pb.w && y1 > pb.y && y0 < pb.y + pb.h;
+        var inside = hit && x0 >= pb.x + prx && x1 <= pb.x + pb.w - prx && y0 >= pb.y && y1 <= pb.y + pb.h ||
+                     hit && x0 >= pb.x && x1 <= pb.x + pb.w && y0 >= pb.y + prx && y1 <= pb.y + pb.h - prx;
+        function addInk(white, clip){
+          var pth = document.createElementNS(NS, 'path');
+          pth.setAttribute('class', white ? 'ink w' : 'ink');
+          if(clip) pth.setAttribute('clip-path', clip);
+          pc.appendChild(pth); inks.push(pth);
+        }
+        if(!hit) addInk(false);
+        else if(inside) addInk(true);
+        else {
+          var panel = rrect(pb.x, pb.y, pb.w, pb.h, prx);
+          addInk(false, mkClip(pc, 'M' + (x0 - 5) + ' ' + (y0 - 5) + 'H' + (x1 + 5) + 'V' + (y1 + 5) + 'H' + (x0 - 5) + 'Z' + panel, 'evenodd'));
+          addInk(true, mkClip(pc, panel));
+        }
+        stk.setAttribute('class', inside ? 'stk w' : 'stk');
         stk.setAttribute('stroke-width', phone ? 1.1 : 1.6);
-        pc.appendChild(ink); pc.appendChild(stk);
+        pc.appendChild(stk);
         frag.appendChild(pc);
-        st.chunks.push({a: a, b: b, ink: ink, stk: stk, key: ''});
+        st.chunks.push({a: a, b: b, inks: inks, stk: stk, key: ''});
       }
     });
     wrap.appendChild(frag);
@@ -2028,10 +2064,11 @@ function supabaseInsert(table, row){
         var key = m <= ch.a ? 'e' : (m >= ch.b ? 'f' : 'p' + m);
         if(key === ch.key) return;
         ch.key = key;
-        if(key === 'e'){ ch.ink.removeAttribute('d'); ch.stk.removeAttribute('d'); return; }
+        if(key === 'e'){ ch.inks.forEach(function(p){ p.removeAttribute('d'); }); ch.stk.removeAttribute('d'); return; }
         var to = key === 'f' ? ch.b : m;
         // a one-point overlap hides the seam between pieces
-        ch.ink.setAttribute('d', shape(st, Math.max(0, ch.a - 1), to, key !== 'f' || ch.b === st.n));
+        var dd = shape(st, Math.max(0, ch.a - 1), to, key !== 'f' || ch.b === st.n);
+        ch.inks.forEach(function(p){ p.setAttribute('d', dd); });
         ch.stk.setAttribute('d', to - ch.a >= 2 ? line(st, ch.a, to) : '');
       });
     });
