@@ -25,6 +25,7 @@
   document.body.insertBefore(canvas, document.body.firstChild);
   var ctx = canvas.getContext('2d');
   var W = 0, H = 0, DPR = 1, stars = [], unit = 1;
+  var LITE = window.innerWidth < 760 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
   // same palette as the old hero stars: mostly ink-black, a few red and navy
   var COLORS = ['36,31,29', '36,31,29', '36,31,29', '36,31,29', '36,31,29', '36,31,29', '36,31,29', '174,31,35', '0,48,73'];
 
@@ -46,18 +47,24 @@
     return s;
   }
   function resize(){
-    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    // phones: a lighter field (fewer stars, fewer pixels) keeps scrolling smooth
+    DPR = Math.min(window.devicePixelRatio || 1, LITE ? 1.5 : 2);
     W = window.innerWidth; H = window.innerHeight;
     canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
     unit = Math.max(1, Math.min(2.2, W / 900));
-    var want = W < 700 ? 170 : 330;
+    var want = LITE ? 120 : 330;
     seed = 0x51A7; stars = [];
     for(var i = 0; i < want; i++) stars.push(makeStar({}));
   }
   resize();
-  window.addEventListener('resize', resize);
+  // phones fire resize when the address bar slides; only rebuild on a real size change
+  var lastRW = window.innerWidth, lastRH = window.innerHeight;
+  window.addEventListener('resize', function(){
+    if(window.innerWidth === lastRW && Math.abs(window.innerHeight - lastRH) < 120) return;
+    lastRW = window.innerWidth; lastRH = window.innerHeight; resize();
+  });
 
   // scroll speed (px per second), smoothed so the warp eases in and out
   var lastY = window.scrollY, lastT = performance.now(), vel = 0, velSm = 0;
@@ -122,7 +129,20 @@
     }
   }
 
-  var running = true;
+  var running = true, skip = false, lastTiltY = -1;
+  // the stars belong to the portfolio part: once the red client block reaches
+  // the top of the screen they're switched off (nothing to see behind solid
+  // red, and it spares the phone a full-screen layer under everything below)
+  var proofEl = document.getElementById('testimonials'), starsOn = true, proofAbove = false;
+  // watched, not measured every frame: a thin line at the very top of the
+  // screen tells us when the red block has reached it
+  if(proofEl && 'IntersectionObserver' in window){
+    new IntersectionObserver(function(es){
+      var e = es[0];
+      proofAbove = e.isIntersecting || e.boundingClientRect.top < 0;
+    }, {rootMargin: '0px 0px -100% 0px'}).observe(proofEl);
+  }
+  function starsWanted(){ return !proofAbove; }
   function frame(now){
     if(!running) return;
     var dt = Math.min(0.05, (now - lastT) / 1000) || 0.016;
@@ -131,8 +151,12 @@
     lastY = y; lastT = now;
     velSm += (vel - velSm) * Math.min(1, dt * 6);
     if(Math.abs(velSm) < 1) velSm = 0;
-    drawStars(dt, now);
-    if(!reduce) updateTilts();
+    // idle on a phone: the slow drift only needs half the frames
+    skip = !skip;
+    var want = starsWanted();
+    if(want !== starsOn){ starsOn = want; canvas.style.display = want ? '' : 'none'; }
+    if(starsOn && !(LITE && velSm === 0 && skip)) drawStars(dt * (LITE && velSm === 0 ? 2 : 1), now);
+    if(!reduce && y !== lastTiltY){ lastTiltY = y; updateTilts(); }
     requestAnimationFrame(frame);
   }
   if(reduce){

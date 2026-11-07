@@ -130,7 +130,12 @@ var QUOVEX_CONTACT = {
         pts.push(best);
       }
 
-      var frag = document.createDocumentFragment();
+      // The stars are painted on one canvas instead of being 377 separately
+      // animated elements: the same positions, sizes, colours and twinkle,
+      // but a phone only has to redraw one small picture, and only while
+      // the hero is on screen. Twinkles are slow (2.4-6.4s), so 30 frames
+      // a second looks identical.
+      var stars = [];
       for(var i = 0; i < pts.length; i++){
         var roll = rand();
         // diameter in --s units: a few bright hero points, some medium, most fine
@@ -138,24 +143,79 @@ var QUOVEX_CONTACT = {
                 : roll < 0.16 ? 2.4 + rand() * 0.6
                 : 1.4 + rand() * 0.7;
         var hue = rand();
-        var color = hue < 0.1 ? 'var(--red-bright)'
-                  : hue < 0.2 ? 'var(--ink)'
-                  : 'var(--text)';
-        var star = document.createElement('span');
-        star.className = 'hero-star';
-        star.style.setProperty('--d', dia.toFixed(2));
-        star.style.left = (pts[i][0] * 100).toFixed(3) + '%';
-        star.style.top = (pts[i][1] * 100).toFixed(3) + '%';
-        star.style.color = color;
+        var tone = hue < 0.1 ? 'red' : hue < 0.2 ? 'ink' : 'text';
         var dur = 2.4 + rand() * 4;
-        star.style.animationDuration = dur.toFixed(2) + 's';
-        // negative delay so every star is already mid-twinkle on first paint
-        star.style.animationDelay = (-rand() * dur).toFixed(2) + 's';
-        frag.appendChild(star);
+        // offset so every star is already mid-twinkle on first paint
+        stars.push({x: pts[i][0], y: pts[i][1], d: dia, tone: tone, dur: dur, off: rand() * dur});
       }
+      var canvas = document.createElement('canvas');
+      canvas.className = 'hero-stars';
+      canvas.setAttribute('aria-hidden', 'true');
+      field.appendChild(canvas);
+      var ctx = canvas.getContext('2d');
+      var css = getComputedStyle(document.documentElement);
+      var TONES = {
+        red: css.getPropertyValue('--red-bright').trim() || '#AE1F23',
+        ink: css.getPropertyValue('--ink').trim() || '#003049',
+        text: css.getPropertyValue('--text').trim() || '#241f1d'
+      };
+      var cw = 0, ch = 0, unit = 1;
+      function sizeStars(){
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        cw = field.clientWidth; ch = field.clientHeight;
+        canvas.width = Math.round(cw * dpr); canvas.height = Math.round(ch * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        unit = Math.max(1, Math.min(2.4, window.innerWidth * .0015));  // same as --s
+      }
+      function paintStars(now){
+        ctx.clearRect(0, 0, cw, ch);
+        var t = now / 1000;
+        ['text', 'ink', 'red'].forEach(function(tone){
+          ctx.fillStyle = TONES[tone];
+          for(var k = 0; k < stars.length; k++){
+            var st = stars[k];
+            if(st.tone !== tone) continue;
+            var o = .8, sc = 1;
+            if(!reduceMotion){
+              // 0% and 100%: dim and slightly small; 50%: full; eased both ways
+              var ph = ((t + st.off) % st.dur) / st.dur;
+              var e = .5 - .5 * Math.cos(Math.PI * (ph < .5 ? ph * 2 : (1 - ph) * 2));
+              o = .45 + .55 * e; sc = .85 + .15 * e;
+            }
+            ctx.globalAlpha = o;
+            ctx.beginPath();
+            ctx.arc(st.x * cw, st.y * ch, st.d * unit * sc / 2, 0, 6.2832);
+            ctx.fill();
+          }
+        });
+        ctx.globalAlpha = 1;
+      }
+      var onScreen = true, starRaf = 0, lastPaint = 0;
+      function starLoop(now){
+        starRaf = 0;
+        // stop when off screen, in a hidden tab, or when a page hides the stars
+        if(!onScreen || document.hidden || !canvas.offsetWidth) return;
+        if(now - lastPaint > 32){ lastPaint = now; paintStars(now); }
+        starRaf = requestAnimationFrame(starLoop);
+      }
+      function wakeStars(){ if(!starRaf && !reduceMotion) starRaf = requestAnimationFrame(starLoop); }
+      sizeStars(); paintStars(performance.now());
+      var lastFW = window.innerWidth, lastFH = field.clientHeight;
+      window.addEventListener('resize', function(){
+        if(window.innerWidth === lastFW && Math.abs(field.clientHeight - lastFH) < 2) return;
+        lastFW = window.innerWidth; lastFH = field.clientHeight;
+        sizeStars(); paintStars(performance.now());
+      });
+      if('IntersectionObserver' in window){
+        new IntersectionObserver(function(es){
+          onScreen = es[0].isIntersecting;
+          if(onScreen){ if(field.clientWidth !== cw || field.clientHeight !== ch) sizeStars(); wakeStars(); }
+        }).observe(field);
+      }
+      document.addEventListener('visibilitychange', wakeStars);
+      wakeStars();
 
       if(!reduceMotion) startMeteors(field);
-      field.appendChild(frag);
     });
 
     /* ---------- meteors ----------
@@ -502,15 +562,21 @@ var QUOVEX_CONTACT = {
     /* ---------- scroll cue fade-out ---------- */
     var scrollCues = document.querySelectorAll('.scroll-cue');
     if(scrollCues.length){
+      // only touches the page when the value really changes (it's 0 for
+      // everything past the first 140px), at most once per frame
+      var cueT = -1, cueRaf = 0;
       var updateCues = function(){
-        var t = Math.max(0, 1 - window.scrollY / 140);
+        cueRaf = 0;
+        var t = Math.round(Math.max(0, 1 - window.scrollY / 140) * 50) / 50;
+        if(t === cueT) return;
+        cueT = t;
         scrollCues.forEach(function(c){
           c.style.opacity = t;
           c.style.pointerEvents = t > 0.05 ? 'auto' : 'none';
         });
       };
       updateCues();
-      window.addEventListener('scroll', updateCues, {passive:true});
+      window.addEventListener('scroll', function(){ if(!cueRaf) cueRaf = requestAnimationFrame(updateCues); }, {passive:true});
     }
 
     /* ---------- ambient brand-dot flicker ----------

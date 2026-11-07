@@ -21,7 +21,7 @@
 <link href="https://fonts.googleapis.com" rel="preconnect"/>
 <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&amp;family=Geist+Mono:wght@400;500;600;700&amp;family=Syne:wght@400;500;600;650;700;800&amp;display=swap" rel="stylesheet"/>
-<link href="assets/site.css?v=53" rel="stylesheet"/>
+<link href="assets/site.css?v=54" rel="stylesheet"/>
 
 <style>
 /* ---- home-page-only overrides (kept out of the shared stylesheet on purpose) ---- */
@@ -807,13 +807,21 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 .gc-svg{display:block;width:100%;height:auto;overflow:visible}
 .gc-svg .grid{stroke:rgba(255,255,255,.07);stroke-width:1}
 .gc-svg .tick{fill:rgba(255,255,255,.35);font:500 9px var(--font-mono);letter-spacing:.06em}
-.gc-svg .ln{fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.4s cubic-bezier(.65,0,.25,1)}
-.gc-svg .ln.views{stroke-width:3.2}
+.gc-svg .ln{fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.8s cubic-bezier(.65,0,.25,1)}
+.gc-svg .ln.views{stroke-width:2}
+.gc-svg .ln.glow{stroke-width:7;opacity:.22}
+.gchart--now .gc-svg .ln.glow{opacity:0}
+.gc-dot{opacity:0;transition:opacity .4s ease 1.6s}
+.growth-card.is-on .gc-dot{opacity:1}
+.gc-core{fill:#fff}
+.gc-ring{fill:none;stroke:var(--g-views);stroke-width:1.5;transform-box:fill-box;transform-origin:center;animation:gcPulse 2s ease-out infinite}
+.gchart--now .gc-core{fill:rgba(255,255,255,.55)}
+.gchart--now .gc-ring{display:none}
+@keyframes gcPulse{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.6);opacity:0}}
 .gc-svg .area{opacity:0;transition:opacity .8s ease .9s}
 .growth-card.is-on .gc-svg .ln{stroke-dashoffset:0}
 .growth-card.is-on .gc-svg .area{opacity:1}
 .gchart--now .ln{opacity:.55}
-.gchart--now .gc-svg .area{opacity:0 !important}
 .growth-try{display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px 16px;margin-top:26px}
 .growth-try label{font-size:15px;color:rgba(255,255,255,.75)}
 .growth-try output{font-family:var(--font-display);font-weight:650;font-size:24px;font-variant-numeric:tabular-nums}
@@ -836,7 +844,8 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   .growth-try{text-align:left}
 }
 @media (prefers-reduced-motion:reduce){
-  .gc-svg .ln,.gc-svg .area{transition:none}
+  .gc-svg .ln,.gc-svg .area,.gc-dot{transition:none}
+  .gc-ring{animation:none}
 }
 
 /* one film now: centred, larger, title always on one line */
@@ -1095,7 +1104,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
   <div class="growth-card">
     <div class="growth-head">
       <p class="growth-eyebrow">What changes</p>
-      <div class="growth-title" role="heading" aria-level="2"><span class="growth-x" id="gxMult">3&times;</span> the views.</div>
+      <div class="growth-title" role="heading" aria-level="2"><span class="growth-x" id="gxMult">1.0&times;</span> the views.</div>
       <p class="growth-sub">Six months of posting on your own, next to six months with us editing. Drag the slider to start from your own numbers.</p>
     </div>
 
@@ -1201,7 +1210,7 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 
 
 <script src="assets/youtube.js?v=2"></script>
-<script src="assets/site.js?v=35"></script>
+<script src="assets/site.js?v=36"></script>
 <script>
 /* Hero tagline's rotating word: cycles through who the work is actually
    for, one word/phrase at a time, with a quick blur+fade swap — the
@@ -1670,103 +1679,123 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
 </script>
 <script>
 /* ---- growth card ----
-   Two small charts on the same scale: six months on your own, and six
-   months with QUOVEX editing. All four numbers share one log scale so
-   views (thousands) and comments (dozens) both read clearly. The slider
-   sets where you start; it only redraws eight short lines, so dragging
-   it costs next to nothing, and nothing runs while you scroll. */
+   Two charts on the same scale, drawn like a live market chart: six
+   months of daily-ish data points with real up-and-down movement. On
+   your own the numbers drift sideways; with QUOVEX they climb, with the
+   odd viral spike. The shapes come from a fixed seed, so they look the
+   same every visit, and the slider only rescales them (eight short
+   redraws), so dragging it is cheap and nothing runs while you scroll.
+   The headline counts up to its number once, when the card arrives. */
 (function(){
   var card = document.querySelector('.growth-card');
   if(!card) return;
   var NS = 'http://www.w3.org/2000/svg';
-  var now = document.getElementById('gNow'), us = document.getElementById('gUs');
   var slider = document.getElementById('gSlider'), out = document.getElementById('gOut');
   var nowNum = document.getElementById('gNowNum'), usNum = document.getElementById('gUsNum'), mult = document.getElementById('gxMult');
-  var W = 320, H = 170, PL = 30, PR = 6, PT = 8, PB = 20, MONTHS = 6;
-  // share of views that turn into each reaction: on your own, then with sharper edits
-  var RATE = {views: [1, 1], likes: [.035, .046], shares: [.004, .0075], comments: [.0025, .0042]};
+  var W = 320, H = 170, PL = 22, PR = 10, PT = 10, PB = 20, N = 90, M = 3;
+  var RATE = {views: [1, 1], likes: [.035, .041], shares: [.004, .0052], comments: [.0025, .0031]};
   var KEYS = ['comments', 'shares', 'likes', 'views'];
   function fmt(n){
     if(n >= 1e6) return (n / 1e6).toFixed(n < 1e7 ? 1 : 0).replace(/\.0$/, '') + 'M';
     if(n >= 1e3) return (n / 1e3).toFixed(n < 1e4 ? 1 : 0).replace(/\.0$/, '') + 'k';
     return String(Math.round(n));
   }
-  function wob(m, k){ return 1 + .05 * Math.sin(m * 2.1 + k) + .03 * Math.sin(m * 4.7 + k * 1.7); }
-  // smaller accounts tend to grow faster in relative terms
-  function multFor(V){ var t = (Math.log10(V) - 3) / 3; return 4.2 - 2 * Math.max(0, Math.min(1, t)); }
-  function series(V, withUs){
-    var M = multFor(V), o = {};
-    KEYS.forEach(function(k, ki){
-      var pts = [];
-      for(var m = 0; m <= MONTHS; m++){
-        var t = m / MONTHS;
-        var v = withUs ? V * (1 + (M - 1) * (1 - Math.pow(1 - t, 1.6))) : V * (1 + .05 * t);
-        var r = RATE[k][withUs ? 1 : 0];
-        if(withUs) r = RATE[k][0] + (RATE[k][1] - RATE[k][0]) * Math.min(1, t * 1.6);
-        pts.push(v * r * (m ? wob(m, ki + (withUs ? 3 : 0)) : 1));
-      }
-      o[k] = pts;
-    });
-    return o;
+  var seed = 7;
+  function rnd(){ seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  function gauss(){ return (rnd() + rnd() + rnd() - 1.5) * 1.15; }
+  // the shape of each line, as a multiple of where you start (fixed seed)
+  function walk(withUs, vol, spikes){
+    // a random walk pinned to 0 at both ends (so it can't drift off), laid
+    // over the trend; it calms toward the end so the line finishes on its high
+    var lv = [], cur = 0, mom = 0, f = [];
+    for(var i = 0; i < N; i++){ mom = mom * .7 + gauss() * vol; cur = cur * .85 + mom; lv.push(cur); }
+    for(var j = 0; j < N; j++){
+      var t = j / (N - 1);
+      var trend = withUs ? Math.log(1 + (M - 1) * Math.pow(t, 1.35)) : Math.log(1.05) * t;
+      var noise = (lv[j] - lv[N - 1] * t) * Math.pow(1 - t, .6);
+      var spike = 0;
+      if(withUs && spikes) spikes.forEach(function(sp){ var d = (t - sp[0]) / .018; spike += sp[1] * Math.exp(-d * d); });
+      f.push(Math.exp(trend + noise + spike));
+    }
+    f[0] = 1;
+    return f;
   }
-  function build(svg, withUs){
+  var SPIKES = [[.27, .16], [.5, .2], [.7, .12]];
+  // views lead; likes, shares and comments follow them with a little
+  // movement of their own, the way real numbers do
+  var SHAPES = {now: {views: walk(false, .04)}, us: {views: walk(true, .045, SPIKES)}};
+  ['comments', 'shares', 'likes'].forEach(function(k){
+    ['now', 'us'].forEach(function(w){
+      var own = walk(false, .03), base = SHAPES[w].views;
+      SHAPES[w][k] = base.map(function(v, i){ return v * own[i] / Math.pow(1.05, i / (N - 1)); });
+    });
+  });
+  function build(svg, id){
     svg.textContent = '';
     var defs = document.createElementNS(NS, 'defs');
-    defs.innerHTML = '<linearGradient id="gArea' + (withUs ? 'U' : 'N') + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4b55" stop-opacity=".32"/><stop offset="1" stop-color="#ff4b55" stop-opacity="0"/></linearGradient>';
+    defs.innerHTML =
+      '<linearGradient id="gA' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + (id === 'U' ? '#ff4b55' : '#8a93a6') + '" stop-opacity="' + (id === 'U' ? '.38' : '.16') + '"/><stop offset="1" stop-color="' + (id === 'U' ? '#ff4b55' : '#8a93a6') + '" stop-opacity="0"/></linearGradient>';
     svg.appendChild(defs);
-    var g = document.createElementNS(NS, 'g'); g.setAttribute('class', 'grid-g'); svg.appendChild(g);
-    var area = document.createElementNS(NS, 'path'); area.setAttribute('class', 'area'); area.setAttribute('fill', 'url(#gArea' + (withUs ? 'U' : 'N') + ')'); svg.appendChild(area);
-    var lines = {};
+    var g = document.createElementNS(NS, 'g'); svg.appendChild(g);
+    var area = document.createElementNS(NS, 'path'); area.setAttribute('class', 'area'); area.setAttribute('fill', 'url(#gA' + id + ')'); svg.appendChild(area);
+    var lines = {}, glow = document.createElementNS(NS, 'path');
+    glow.setAttribute('class', 'ln glow'); glow.setAttribute('pathLength', '1'); glow.setAttribute('stroke', 'var(--g-views)');
+    svg.appendChild(glow);
     KEYS.forEach(function(k){
-      var p = document.createElementNS(NS, 'path');
-      p.setAttribute('class', 'ln ' + k); p.setAttribute('pathLength', '1');
-      p.setAttribute('stroke', 'var(--g-' + k + ')');
-      svg.appendChild(p); lines[k] = p;
+      var pth = document.createElementNS(NS, 'path');
+      pth.setAttribute('class', 'ln ' + k); pth.setAttribute('pathLength', '1');
+      pth.setAttribute('stroke', 'var(--g-' + k + ')');
+      svg.appendChild(pth); lines[k] = pth;
     });
-    return {svg: svg, grid: g, area: area, lines: lines};
+    var dot = document.createElementNS(NS, 'g'); dot.setAttribute('class', 'gc-dot');
+    dot.innerHTML = '<circle class="gc-ring" r="9"/><circle class="gc-core" r="3.6"/>';
+    svg.appendChild(dot);
+    return {grid: g, area: area, glow: glow, lines: lines, dot: dot};
   }
-  var A = build(now, false), B = build(us, true);
-  function smooth(pts){
-    var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
-    for(var i = 0; i < pts.length - 1; i++){
-      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
-      d += ' C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' +
-           (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
-    }
-    return d;
+  var A = build(document.getElementById('gNow'), 'N'), B = build(document.getElementById('gUs'), 'U');
+  // each line is growth since month 0 (1x = where you started), so views,
+  // likes, shares and comments sit on one honest scale; the big numbers
+  // above each chart are the real monthly views
+  function grow(k, w, i){
+    var t = i / (N - 1), r0 = RATE[k][0], r1 = RATE[k][w];
+    return SHAPES[w ? 'us' : 'now'][k][i] * (r0 + (r1 - r0) * Math.min(1, t * 1.6)) / r0;
   }
+  var TOP = 0;
+  KEYS.forEach(function(k){ for(var i = 0; i < N; i++){ TOP = Math.max(TOP, grow(k, 1, i), grow(k, 0, i)); } });
+  TOP = Math.ceil(TOP + .3);
   function draw(V){
-    var sa = series(V, false), sb = series(V, true);
-    // one shared scale for both charts, so the difference is honest
-    var lo = Math.log10(V * RATE.comments[0] * .7), hi = Math.log10(V * multFor(V) * 1.25);
-    function y(v){ return PT + (1 - (Math.log10(v) - lo) / (hi - lo)) * (H - PT - PB); }
-    function x(m){ return PL + m / MONTHS * (W - PL - PR); }
-    [[A, sa], [B, sb]].forEach(function(pair){
-      var c = pair[0], s = pair[1], gh = '';
-      for(var e = Math.ceil(lo); e <= Math.floor(hi); e++){
-        var yy = y(Math.pow(10, e)).toFixed(1);
-        gh += '<line class="grid" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + yy + '" y2="' + yy + '"/><text class="tick" x="0" y="' + (+yy + 3) + '">' + fmt(Math.pow(10, e)) + '</text>';
+    function y(v){ return PT + (1 - v / TOP) * (H - PT - PB); }
+    function x(i){ return PL + i / (N - 1) * (W - PL - PR); }
+    [[A, 0], [B, 1]].forEach(function(cfg){
+      var c = cfg[0], w = cfg[1], gh = '';
+      for(var e = 1; e <= TOP; e++){
+        var yy = y(e).toFixed(1);
+        gh += '<line class="grid" x1="' + PL + '" x2="' + (W - PR) + '" y1="' + yy + '" y2="' + yy + '"/><text class="tick" x="0" y="' + (+yy + 3) + '">' + e + '×</text>';
       }
       ['Now', '3 mo', '6 mo'].forEach(function(t, i){
-        gh += '<text class="tick" x="' + x(i * 3).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="' + (i === 0 ? 'start' : i === 2 ? 'end' : 'middle') + '">' + t + '</text>';
+        gh += '<text class="tick" x="' + x(i * (N - 1) / 2).toFixed(1) + '" y="' + (H - 4) + '" text-anchor="' + (i === 0 ? 'start' : i === 2 ? 'end' : 'middle') + '">' + t + '</text>';
       });
       c.grid.innerHTML = gh;
       KEYS.forEach(function(k){
-        var pts = s[k].map(function(v, m){ return [x(m), y(v)]; });
-        c.lines[k].setAttribute('d', smooth(pts));
-        if(k === 'views') c.area.setAttribute('d', smooth(pts) + ' L' + x(MONTHS) + ' ' + (H - PB) + ' L' + x(0) + ' ' + (H - PB) + ' Z');
+        var d = '', last;
+        for(var i = 0; i < N; i++){
+          last = [x(i), y(grow(k, w, i))];
+          d += (i ? 'L' : 'M') + last[0].toFixed(1) + ' ' + last[1].toFixed(1);
+        }
+        c.lines[k].setAttribute('d', d);
+        if(k === 'views'){
+          c.glow.setAttribute('d', d);
+          c.area.setAttribute('d', d + 'L' + x(N - 1) + ' ' + (H - PB) + 'L' + x(0) + ' ' + (H - PB) + 'Z');
+          c.dot.setAttribute('transform', 'translate(' + last[0].toFixed(1) + ' ' + last[1].toFixed(1) + ')');
+        }
       });
     });
-    var endNow = sa.views[MONTHS], endUs = sb.views[MONTHS];
-    nowNum.textContent = fmt(endNow); usNum.textContent = fmt(endUs);
-    mult.textContent = (endUs / endNow).toFixed(1).replace(/\.0$/, '') + '×';
+    nowNum.textContent = fmt(V * SHAPES.now.views[N - 1]); usNum.textContent = fmt(V * SHAPES.us.views[N - 1]);
     out.textContent = fmt(V);
   }
   function fromSlider(){
-    var t = slider.value / 100;
     slider.style.setProperty('--p', slider.value + '%');
-    // 1k to 1M, rounded to a tidy number
-    var V = Math.pow(10, 3 + 3 * t), mag = Math.pow(10, Math.floor(Math.log10(V)) - 1);
+    var V = Math.pow(10, 3 + 3 * slider.value / 100), mag = Math.pow(10, Math.floor(Math.log10(V)) - 1);
     return Math.round(V / mag) * mag;
   }
   var raf = 0;
@@ -1775,10 +1804,18 @@ body.is-preloading.is-entered .preload-bar{opacity:1}
     raf = requestAnimationFrame(function(){ raf = 0; draw(fromSlider()); });
   });
   draw(fromSlider());
-  // draw the lines in once, when the card comes into view
+  // the headline only ever counts up, once
+  function countUp(){
+    var t0 = performance.now(), D = 1400;
+    (function step(now){
+      var p = Math.min(1, (now - t0) / D), e = 1 - Math.pow(1 - p, 3);
+      mult.textContent = (1 + (M - 1) * e).toFixed(1) + '×';
+      if(p < 1) requestAnimationFrame(step); else mult.textContent = M + '×';
+    })(t0);
+  }
   if('IntersectionObserver' in window){
     var io = new IntersectionObserver(function(es){
-      if(es[0].isIntersecting){ card.classList.add('is-on'); io.disconnect(); }
+      if(es[0].isIntersecting){ card.classList.add('is-on'); countUp(); io.disconnect(); }
     }, {threshold: .35});
     io.observe(card);
   } else card.classList.add('is-on');
